@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="nn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d5c6b">
+<title>Krambua dagsoppgåver</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: éin smal kolonne som ei sjekkliste på veggen – namn øvst, dagfaner, framdrift, oppgåver gruppert */
+:root{
+  --bg:#eef2f3; --surface:#ffffff; --ink:#15262b; --muted:#5b6d72; --line:#d3dcde;
+  --accent:#0d5c6b; --accent-ink:#ffffff; --done:#1f7a45; --done-bg:#e3f2e8; --warn:#9a5b00; --warn-bg:#fff3dc;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a1d; --surface:#172529; --ink:#e4ecee; --muted:#93a6ab; --line:#2a3b40;
+  --accent:#4fb3c4; --accent-ink:#06191d; --done:#5fcf8c; --done-bg:#16301f; --warn:#f0b35a; --warn-bg:#35270f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a1d; --surface:#172529; --ink:#e4ecee; --muted:#93a6ab; --line:#2a3b40;
+  --accent:#4fb3c4; --accent-ink:#06191d; --done:#5fcf8c; --done-bg:#16301f; --warn:#f0b35a; --warn-bg:#35270f; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1.05;margin:0;text-wrap:balance;letter-spacing:.01em}
+.sub{color:var(--muted);margin:4px 0 0}
+.name{display:flex;flex-direction:column;gap:6px}
+.name label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.name input{font:inherit;font-size:1.1rem;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.name input:focus{outline:none;border-color:var(--accent)}
+.name.need input{border-color:var(--warn);background:var(--warn-bg)}
+.name .hint{font-size:.9rem;color:var(--warn);min-height:1.2em}
+.task:focus-visible,.undo:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.progress{display:flex;flex-direction:column;gap:6px}
+.progress .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.progress strong{font-family:var(--display);font-size:1.35rem}
+.progress span{color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--done);width:0;transition:width .3s}
+.note{padding:10px 14px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:.95rem}
+.group{display:flex;flex-direction:column;gap:8px}
+.group h2{font-family:var(--display);font-weight:700;font-size:1.25rem;margin:6px 0 0;text-transform:uppercase;letter-spacing:.04em}
+.group p.intro{margin:0;color:var(--muted);font-size:.95rem}
+.task{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer}
+.task[disabled]{cursor:default}
+.box{flex:none;width:26px;height:26px;border-radius:7px;border:2px solid var(--muted);display:grid;place-items:center;margin-top:1px}
+.task.is-done{background:var(--done-bg);border-color:transparent}
+.task.is-done .box{background:var(--done);border-color:var(--done)}
+.task.is-done .box::after{content:"";width:7px;height:13px;border:solid var(--bg);border-width:0 3px 3px 0;transform:translateY(-2px) rotate(45deg)}
+.txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.txt b{font-weight:600}
+.txt small{color:var(--muted);font-size:.9rem}
+.who{color:var(--done);font-weight:600;font-size:.9rem}
+.item{display:flex;flex-direction:column;gap:4px}
+.undo{align-self:flex-end;font:inherit;font-size:.85rem;background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:2px 4px}
+.status{font-size:.85rem;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.day{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--bg)}
+.day.is-today{border:2px solid var(--accent);background:var(--surface)}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.day-head h2{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;text-transform:uppercase;letter-spacing:.03em}
+.day-head .meta{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.95rem}
+.day .pill{font-family:var(--body);font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;background:var(--accent);color:var(--accent-ink);padding:2px 8px;border-radius:99px;vertical-align:middle;margin-left:6px}
+.group h3{font-family:var(--display);font-weight:600;font-size:1.1rem;margin:6px 0 0;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.day.is-today .group h3{color:var(--ink)}
+.owner{display:flex;flex-direction:column;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);padding:4px;border-radius:10px}
+.seg button,.wk button{font:inherit;font-weight:600;border:none;border-radius:8px;padding:10px;cursor:pointer;background:transparent;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.wk{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wk button{background:var(--surface);border:1px solid var(--line)}
+.wk strong{font-family:var(--display);font-size:1.2rem}
+.seg button:focus-visible,.wk button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+html{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Krambua dagsoppgåver</h1>
+    <p class="sub" id="dateline">&nbsp;</p>
+  </header>
+
+  <div class="name" id="nameBox">
+    <label for="navn">Namnet ditt</label>
+    <input id="navn" type="text" autocomplete="off" placeholder="Skriv namnet ditt her">
+    <div class="hint" id="nameHint"></div>
+  </div>
+
+  <div class="owner" id="ownerBar" hidden>
+    <div class="seg" role="group" aria-label="Visning">
+      <button type="button" id="vToday" aria-pressed="true">I dag</button>
+      <button type="button" id="vWeek" aria-pressed="false">Oversikt</button>
+    </div>
+    <div class="wk" id="wkNav" hidden>
+      <button type="button" id="wkPrev">‹ Førre</button>
+      <strong id="wkLabel">Veke</strong>
+      <button type="button" id="wkNext">Neste ›</button>
+    </div>
+  </div>
+
+  <div class="progress" id="progBox">
+    <div class="row"><strong>I dag</strong><span id="progCount">0 av 0 gjort</span></div>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+
+  <div class="note" id="note" hidden></div>
+  <main id="list" style="display:flex;flex-direction:column;gap:14px"></main>
+  <p class="status" id="status">Koplar til …</p>
+</div>
+<script>
+
+const DAILY = {title:"Kvar dag", intro:"Gjeld alltid, uansett kva dag det er.", tasks:[
+  {id:"tining", t:"Sjekk tining før du går heim", s:"Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter."},
+  {id:"rein", t:"Butikken er rein og fin", s:"Ekstremt viktig heile dagen."},
+  {id:"boss", t:"Tøm det store bosset ute", s:"Både ved kaien og det som står oppe."}
+]};
+const WEEK = {
+  1:{title:"Måndag – storvask kjøkken", tasks:[
+    {id:"vifte-vask", t:"Ta ned vifta og vask ho grundig med Zalo"},
+    {id:"vifte-inni", t:"Vask oppi vifta", s:"Tørk ut feitt med papir."},
+    {id:"vegg-spray", t:"Vask veggen bak steikeplater og vask", s:"Bruk feittløysande spray."},
+    {id:"vegg-stal", t:"Stålglans på veggane", s:"Berre veggane."},
+    {id:"salat-golv", t:"Dra fram salatbaren og vask bak", s:"Golv, vegg og hjørnet under benken."},
+    {id:"salat-inni", t:"Vask oppi salatbaren og alle behaldarane"},
+    {id:"polse", t:"Vask under pølsegrillen og pølseplata"},
+    {id:"highspeed", t:"Vask bak High Speed-omnen"},
+    {id:"manglar", t:"Skriv ned varer som manglar"}
+  ]},
+  2:{title:"Tysdag", tasks:[{id:"softis", t:"Vask softismaskinen"}]},
+  3:{title:"Onsdag – levering frå ASKO", intro:"Gjer alt klart så det går kjapt. Ta varene i denne rekkefølgja.", tasks:[
+    {id:"asko-klar", t:"Gjer alt klart til leveringa"},
+    {id:"asko-frys", t:"Frysevarer inn først", s:"Spesielt is – den smeltar raskt."},
+    {id:"asko-brod", t:"Brødvarer inn kjapt", s:"Dei tiner raskt."},
+    {id:"asko-rest", t:"Resten av varene inn"},
+    {id:"asko-dato", t:"Nye varer bakerst, gamle fremst", s:"Så me sel etter rett dato."}
+  ]},
+  5:{title:"Fredag – påfyll og vask før helga", tasks:[
+    {id:"brus", t:"Fyll brusskapet heilt opp"},
+    {id:"kjol", t:"Vask alle overflater i kjøleskap og frysarar"},
+    {id:"bord", t:"Vask alle borda ute"},
+    {id:"golv-ute", t:"Vask golvet ute under taket"},
+    {id:"toalett", t:"Vask personaltoalettet"},
+    {id:"vaskerom", t:"Vask vaskerommet"}
+  ]}
+};
+
+const DAYNAMES = ["Måndag","Tysdag","Onsdag","Torsdag","Fredag"];
+const TZ = "Europe/Oslo";
+const $ = id => document.getElementById(id);
+const nameInput = $("navn");
+
+// ---- Oppsett: repoet blir lese av adressa (brukar.github.io/repo) ----
+const OWNER = location.hostname.endsWith("github.io") ? location.hostname.split(".")[0] : "";
+const REPO  = location.hostname.endsWith("github.io") ? (location.pathname.split("/")[1] || "") : "";
+const API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/`;
+
+// Nøkkelen kjem i lenka (#k=...), blir lagra på telefonen og fjerna frå adresselinja
+function store(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+(function readHash(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  if(h.get("k")){ store("krambua-nokkel", h.get("k")); store("krambua-sjef", h.has("sjef") ? "1" : null); }
+  if(location.hash) history.replaceState(null, "", location.pathname + location.search);
+})();
+const TOKEN = load("krambua-nokkel");
+const isOwner = load("krambua-sjef") === "1";
+
+let canWrite = !!TOKEN, busy = false, online = false;
+let week = [], view = "today", weekOffset = 0;
+let data = {}, sha = {}, etag = {};
+
+function osloParts(d){
+  const p = new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"}).formatToParts(d);
+  const g = k => p.find(x=>x.type===k).value;
+  return {date:`${g("year")}-${g("month")}-${g("day")}`, dow:{Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[g("weekday")]};
+}
+function addDays(iso,n){ const d=new Date(iso+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); }
+function pretty(iso){ return new Date(iso+"T12:00:00Z").toLocaleDateString("nn-NO",{day:"numeric",month:"long",timeZone:"UTC"}); }
+function fmtTime(ms){ return new Date(ms).toLocaleTimeString("nn-NO",{hour:"2-digit",minute:"2-digit",timeZone:TZ}); }
+function today(){ return osloParts(new Date()); }
+function tasksFor(dow){ return [DAILY, ...(WEEK[dow]?[WEEK[dow]]:[])]; }
+const b64enc = s => btoa(unescape(encodeURIComponent(s)));
+const b64dec = s => decodeURIComponent(escape(atob(s.replace(/\s/g,""))));
+
+nameInput.value = load("krambua-namn") || "";
+nameInput.addEventListener("input",()=>{
+  store("krambua-namn", nameInput.value.trim());
+  $("nameBox").classList.remove("need"); $("nameHint").textContent="";
+});
+
+// ---- GitHub-lagring: éi fil per dag, data/ÅÅÅÅ-MM-DD.json ----
+function headers(extra){ return Object.assign({"Accept":"application/vnd.github+json","Authorization":"Bearer "+TOKEN}, extra||{}); }
+async function fetchDay(date){
+  const h = headers(etag[date] ? {"If-None-Match":etag[date]} : {});
+  const r = await fetch(API+date+".json?t="+(etag[date]?"":Date.now()), {headers:h, cache:"no-store"});
+  if(r.status===304) return false;
+  if(r.status===404){ const changed = sha[date]!==undefined || !(date in data); data[date]={}; sha[date]=null; etag[date]=null; return changed; }
+  if(r.status===401 || r.status===403){ const e=new Error("auth"); e.status=r.status; throw e; }
+  if(!r.ok) throw new Error("http "+r.status);
+  etag[date] = r.headers.get("ETag");
+  const j = await r.json();
+  sha[date] = j.sha;
+  try{ data[date] = JSON.parse(b64dec(j.content)).done || {}; }catch(e){ data[date] = {}; }
+  return true;
+}
+async function refresh(){
+  if(!TOKEN || !OWNER) return;
+  let changed = false;
+  try{
+    for(const d of week) changed = (await fetchDay(d.date)) || changed;
+    online = true; $("status").textContent = "Oppdaterer seg automatisk";
+  }catch(e){
+    online = false;
+    if(e.status===401){ canWrite=false; $("status").textContent = "Lenka er ikkje gyldig lenger. Be om ny lenke."; }
+    else $("status").textContent = "Får ikkje kontakt. Prøver igjen …";
+  }
+  if(changed) render();
+}
+async function saveTask(date, id, val){
+  for(let attempt=0; attempt<4; attempt++){
+    etag[date] = null;
+    await fetchDay(date);
+    const done = Object.assign({}, data[date]);
+    if(val) done[id]=val; else delete done[id];
+    const body = {message:`${val?"Gjort":"Angra"}: ${id} (${date})`, content:b64enc(JSON.stringify({done},null,1))};
+    if(sha[date]) body.sha = sha[date];
+    const r = await fetch(API+date+".json", {method:"PUT", headers:headers({"Content-Type":"application/json"}), body:JSON.stringify(body)});
+    if(r.ok){ const j=await r.json(); sha[date]=j.content.sha; etag[date]=null; data[date]=done; return; }
+    if(r.status===409 || r.status===422){ await new Promise(res=>setTimeout(res, 400+Math.random()*800)); continue; }
+    const e=new Error("http "+r.status); e.status=r.status; throw e;
+  }
+  throw new Error("conflict");
+}
+
+function isoWeek(iso){
+  const d=new Date(iso+"T12:00:00Z"); const day=(d.getUTCDay()+6)%7;
+  d.setUTCDate(d.getUTCDate()-day+3); const f=new Date(Date.UTC(d.getUTCFullYear(),0,4));
+  return 1+Math.round(((d-f)/864e5-3+((f.getUTCDay()+6)%7))/7);
+}
+function buildWeek(){
+  const t = today();
+  if(view==="week"){
+    const monday = addDays(t.date, 1 - t.dow + weekOffset*7);
+    week = [1,2,3,4,5].map(dow=>({dow, date:addDays(monday, dow-1)}));
+    $("wkLabel").textContent = `Veke ${isoWeek(monday)}` + (weekOffset===0 ? " · denne veka" : "");
+  } else {
+    week = t.dow <= 5 ? [{dow:t.dow, date:t.date}] : [];
+  }
+}
+function setView(v){
+  view=v; if(v==="today") weekOffset=0;
+  $("vToday").setAttribute("aria-pressed",String(v==="today"));
+  $("vWeek").setAttribute("aria-pressed",String(v==="week"));
+  $("wkNav").hidden = v!=="week";
+  buildWeek(); render(); refresh();
+}
+$("vToday").onclick=()=>setView("today");
+$("vWeek").onclick=()=>setView("week");
+$("wkPrev").onclick=()=>{weekOffset--; setView("week");};
+$("wkNext").onclick=()=>{weekOffset++; setView("week");};
+
+function taskButton(task, date, isToday){
+  const d = (data[date]||{})[task.id];
+  const item = document.createElement("div"); item.className="item";
+  const b = document.createElement("button"); b.type="button";
+  b.className = "task" + (d ? " is-done" : "");
+  b.disabled = !isToday || !canWrite || !!d || busy;
+  const box = document.createElement("span"); box.className="box"; box.setAttribute("aria-hidden","true");
+  const txt = document.createElement("span"); txt.className="txt";
+  const bt = document.createElement("b"); bt.textContent = task.t; txt.appendChild(bt);
+  if(task.s){ const sm=document.createElement("small"); sm.textContent=task.s; txt.appendChild(sm); }
+  if(d){ const w=document.createElement("span"); w.className="who"; w.textContent=`Gjort av ${d.namn} kl. ${fmtTime(d.tid)}`; txt.appendChild(w); }
+  b.append(box, txt);
+  b.setAttribute("aria-label", task.t + (d ? `, gjort av ${d.namn}` : ", ikkje gjort"));
+  b.onclick = ()=>markDone(date, task.id);
+  item.appendChild(b);
+  if(d && isToday && canWrite){
+    const u=document.createElement("button"); u.type="button"; u.className="undo"; u.textContent="Angre";
+    u.disabled = busy;
+    u.onclick=()=>setTask(date, task.id, null); item.appendChild(u);
+  }
+  return item;
+}
+
+function render(){
+  const t = today();
+  const isWeekday = t.dow <= 5;
+  $("dateline").textContent = view==="week" ? "Oversikt over veka"
+    : isWeekday ? `${DAYNAMES[t.dow-1]} ${pretty(t.date)}` : "Helg – ingen oppgåver i dag. Lista kjem att måndag.";
+  $("progBox").hidden = !isWeekday || view==="week";
+  if(isWeekday && view!=="week"){
+    const all = tasksFor(t.dow).flatMap(s=>s.tasks);
+    const n = all.filter(x=>(data[t.date]||{})[x.id]).length;
+    $("progCount").textContent = `${n} av ${all.length} gjort`;
+    $("progBar").style.width = (n/all.length*100)+"%";
+  }
+  const note=$("note");
+  if(!OWNER){ note.hidden=false; note.textContent="Sida må opnast frå GitHub Pages-adressa."; }
+  else if(!TOKEN){ note.hidden=false; note.textContent="Opne lenka du fekk frå Kristoffer éin gong, så kan du krysse av på denne telefonen."; }
+  else note.hidden=true;
+
+  const list=$("list"); list.innerHTML="";
+  for(const d of week){
+    const isToday = d.date === t.date;
+    const sec=document.createElement("section"); sec.className="day"+(isToday?" is-today":""); sec.id="dag-"+d.dow;
+    const all = tasksFor(d.dow).flatMap(s=>s.tasks);
+    const n = all.filter(x=>(data[d.date]||{})[x.id]).length;
+    const head=document.createElement("div"); head.className="day-head";
+    const h=document.createElement("h2"); h.textContent=DAYNAMES[d.dow-1];
+    if(isToday){ const p=document.createElement("span"); p.className="pill"; p.textContent="I dag"; h.appendChild(p); }
+    const m=document.createElement("span"); m.className="meta"; m.textContent=`${pretty(d.date)} · ${n}/${all.length}`;
+    head.append(h,m); sec.appendChild(head);
+    for(const grp of tasksFor(d.dow)){
+      const g=document.createElement("div"); g.className="group";
+      const h3=document.createElement("h3");
+      h3.textContent = grp===DAILY ? "Kvar dag" : (grp.title.includes("–") ? grp.title.replace(/^[^–]*–\s*/,"") : "Dagens oppgåver");
+      g.appendChild(h3);
+      if(grp.intro && grp!==DAILY){ const p=document.createElement("p"); p.className="intro"; p.textContent=grp.intro; g.appendChild(p); }
+      for(const task of grp.tasks) g.appendChild(taskButton(task, d.date, isToday));
+      sec.appendChild(g);
+    }
+    list.appendChild(sec);
+  }
+}
+
+function markDone(date,id){
+  const namn=nameInput.value.trim();
+  if(!namn){
+    $("nameBox").classList.add("need");
+    $("nameHint").textContent="Skriv namnet ditt først, så veit me kven som gjorde det.";
+    nameInput.focus(); return;
+  }
+  setTask(date,id,{namn, tid:Date.now()});
+}
+async function setTask(date,id,val){
+  if(busy) return; busy=true;
+  // Vis endringa med ein gong
+  const before = Object.assign({}, data[date]);
+  data[date] = Object.assign({}, data[date]); if(val) data[date][id]=val; else delete data[date][id];
+  $("status").textContent="Lagrar …"; render();
+  try{ await saveTask(date,id,val); $("status").textContent="Lagra"; }
+  catch(e){
+    data[date]=before;
+    $("status").textContent = e.status===401||e.status===403 ? "Lenka har ikkje lov til å lagre. Be om ny lenke." : "Klarte ikkje lagre. Sjekk nettet og prøv igjen.";
+  }
+  finally{ busy=false; render(); }
+}
+
+$("ownerBar").hidden = !isOwner;
+let lastDate = today().date;
+setInterval(()=>{
+  const t=today();
+  if(t.date!==lastDate){ lastDate=t.date; buildWeek(); render(); }
+  if(!document.hidden && !busy) refresh();
+}, 20000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refresh(); });
+
+buildWeek(); render();
+if(TOKEN) { $("status").textContent="Hentar …"; refresh(); } else $("status").textContent="";
+</script>
+</body>
+</html>
