@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d5c6b">
+<meta name="theme-color" content="#000000">
 <title>Krambua dagsoppgåver</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
@@ -90,6 +90,8 @@ h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1.05;ma
 .ed-row .acts{display:flex;flex-direction:column;gap:4px}
 .ed-row .acts button{font:inherit;width:36px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
 .ed-bar{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:12px;background:var(--bg)}
+.brand{background:#000;border-radius:14px;padding:14px 16px;display:flex;justify-content:center}
+.brand img{display:block;width:100%;max-width:340px;height:auto}
 html{color-scheme:light}
 body{margin:0}
 [hidden]{display:none!important}
@@ -99,7 +101,8 @@ body{margin:0}
 
 <div class="wrap">
   <header>
-    <h1>Krambua dagsoppgåver</h1>
+    <div class="brand"><img src="data:image/png;base64,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" alt="Krambua Bensin &amp; Storkiosk AS" width="440" height="138"></div>
+    <h1 style="margin-top:14px">Dagsoppgåver</h1>
     <p class="sub" id="dateline">&nbsp;</p>
   </header>
 
@@ -452,7 +455,9 @@ function renderEditor(){
   const msg=document.createElement("span"); msg.id="edMsg"; msg.className="sub";
   save.onclick=()=>saveTasks(save,msg);
   cancel.onclick=()=>{ draft=null; dirty=false; setView("today"); };
-  bar.append(save,cancel,msg); list.appendChild(bar);
+  const keyBtn=document.createElement("button"); keyBtn.type="button"; keyBtn.className="btn ghost"; keyBtn.textContent="Byt nøkkel";
+  keyBtn.onclick=()=>{ forceSetup=true; showSetup(); window.scrollTo({top:0,behavior:"smooth"}); $("keyInput").focus(); };
+  bar.append(save,cancel,keyBtn,msg); list.appendChild(bar);
 }
 async function saveTasks(btn,msg){
   const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {})})).filter(x=>x.t);
@@ -474,9 +479,10 @@ async function saveTasks(btn,msg){
 }
 
 // ---- Førstegongsoppsett og deling ----
+let forceSetup = false;
 function staffUrl(){ return location.origin + location.pathname + "#k=" + TOKEN; }
 function showSetup(){
-  $("setupBox").hidden = !!TOKEN || !OWNER;
+  $("setupBox").hidden = (!!TOKEN && !forceSetup) || !OWNER;
   $("ownerBar").hidden = !isOwner;
   const hid = load("krambua-skjul-deling")==="1";
   $("shareBox").hidden = !(isOwner && TOKEN) || hid;
@@ -492,7 +498,7 @@ $("keySave").onclick = async ()=>{
     const j = await r.json();
     if(!(j.permissions && j.permissions.push)){ $("keyMsg").textContent="Nøkkelen kan berre lese. Den må ha Contents: Read and write."; return; }
   }catch(e){ $("keyMsg").textContent="Får ikkje kontakt med GitHub. Prøv igjen."; return; }
-  store("krambua-nokkel", k); TOKEN = k; canWrite = true;
+  store("krambua-nokkel", k); TOKEN = k; canWrite = true; forceSetup = false; etag = {}; tasksEtag = null;
   isOwner = $("bossChk").checked; store("krambua-sjef", isOwner ? "1" : null);
   $("keyInput").value=""; showSetup(); render(); refresh();
 };
