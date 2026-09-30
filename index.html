@@ -189,7 +189,9 @@ function store(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.se
 function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 (function readHash(){
   const h = new URLSearchParams(location.hash.slice(1));
-  if(h.get("k")){ store("krambua-nokkel", h.get("k")); store("krambua-sjef", h.has("sjef") ? "1" : null); }
+  if(h.get("k")) store("krambua-nokkel", h.get("k"));
+  if(h.has("sjef")) store("krambua-sjef", "1");      // admin-lenke: .../#sjef
+  if(h.has("tilsett")) store("krambua-sjef", null);  // tilbake til vanleg visning
   if(location.hash) history.replaceState(null, "", location.pathname + location.search);
 })();
 let TOKEN = load("krambua-nokkel");
