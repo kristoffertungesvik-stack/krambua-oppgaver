@@ -71,6 +71,15 @@ h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1.05;ma
 .wk button{background:var(--surface);border:1px solid var(--line)}
 .wk strong{font-family:var(--display);font-size:1.2rem}
 .seg button:focus-visible,.wk button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.setup{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:var(--surface);border:2px solid var(--accent)}
+.setup h2{font-family:var(--display);font-size:1.3rem;margin:0;text-transform:uppercase;letter-spacing:.03em}
+.setup p{margin:0;color:var(--muted);font-size:.95rem}
+.setup input[type=text],.setup input[type=password]{font:inherit;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box}
+.setup label.chk{display:flex;gap:8px;align-items:center;color:var(--ink)}
+.btn{font:inherit;font-weight:600;padding:12px 16px;border:none;border-radius:10px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.linkrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.linkrow code{flex:1 1 200px;min-width:0;overflow-wrap:anywhere;font-size:.8rem;background:var(--bg);padding:8px;border-radius:8px;border:1px solid var(--line)}
 html{color-scheme:light}
 body{margin:0}
 [hidden]{display:none!important}
@@ -89,6 +98,23 @@ body{margin:0}
     <input id="navn" type="text" autocomplete="off" placeholder="Skriv namnet ditt her">
     <div class="hint" id="nameHint"></div>
   </div>
+
+  <section class="setup" id="setupBox" hidden>
+    <h2>Kom i gang</h2>
+    <p>Lim inn nøkkelen frå GitHub (byrjar på <b>github_pat_</b>). Dette gjer du berre éin gong.</p>
+    <input id="keyInput" type="password" autocomplete="off" placeholder="github_pat_…">
+    <label class="chk"><input id="bossChk" type="checkbox" checked> Eg er sjefen (vis oversikt og lenke til tilsette)</label>
+    <button class="btn" type="button" id="keySave">Lagre</button>
+    <p id="keyMsg"></p>
+  </section>
+
+  <section class="setup" id="shareBox" hidden>
+    <h2>Lenke til dei tilsette</h2>
+    <p>Send denne lenka til dei tilsette. Dei opnar ho éin gong på mobilen, så er dei klare.</p>
+    <div class="linkrow"><code id="staffLink"></code><button class="btn" type="button" id="copyLink">Kopier</button></div>
+    <p id="copyMsg"></p>
+    <button class="btn ghost" type="button" id="hideShare">Skjul</button>
+  </section>
 
   <div class="owner" id="ownerBar" hidden>
     <div class="seg" role="group" aria-label="Visning">
@@ -166,8 +192,8 @@ function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; }
   if(h.get("k")){ store("krambua-nokkel", h.get("k")); store("krambua-sjef", h.has("sjef") ? "1" : null); }
   if(location.hash) history.replaceState(null, "", location.pathname + location.search);
 })();
-const TOKEN = load("krambua-nokkel");
-const isOwner = load("krambua-sjef") === "1";
+let TOKEN = load("krambua-nokkel");
+let isOwner = load("krambua-sjef") === "1";
 
 let canWrite = !!TOKEN, busy = false, online = false;
 let week = [], view = "today", weekOffset = 0;
@@ -300,7 +326,7 @@ function render(){
   }
   const note=$("note");
   if(!OWNER){ note.hidden=false; note.textContent="Sida må opnast frå GitHub Pages-adressa."; }
-  else if(!TOKEN){ note.hidden=false; note.textContent="Opne lenka du fekk frå Kristoffer éin gong, så kan du krysse av på denne telefonen."; }
+  else if(!TOKEN){ note.hidden=false; note.textContent="Tilsett? Opne lenka du fekk frå Kristoffer éin gong, så kan du krysse av på denne telefonen."; }
   else note.hidden=true;
 
   const list=$("list"); list.innerHTML="";
@@ -350,7 +376,35 @@ async function setTask(date,id,val){
   finally{ busy=false; render(); }
 }
 
-$("ownerBar").hidden = !isOwner;
+// ---- Førstegongsoppsett og deling ----
+function staffUrl(){ return location.origin + location.pathname + "#k=" + TOKEN; }
+function showSetup(){
+  $("setupBox").hidden = !!TOKEN || !OWNER;
+  $("ownerBar").hidden = !isOwner;
+  const hid = load("krambua-skjul-deling")==="1";
+  $("shareBox").hidden = !(isOwner && TOKEN) || hid;
+  if(isOwner && TOKEN) $("staffLink").textContent = staffUrl();
+}
+$("keySave").onclick = async ()=>{
+  const k = $("keyInput").value.trim();
+  if(!k){ $("keyMsg").textContent="Lim inn nøkkelen først."; return; }
+  $("keyMsg").textContent="Sjekkar nøkkelen …";
+  try{
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+k}});
+    if(!r.ok){ $("keyMsg").textContent = r.status===401 ? "Nøkkelen vart ikkje godteken. Sjekk at du kopierte heile." : "Nøkkelen har ikkje tilgang til dette repoet."; return; }
+    const j = await r.json();
+    if(!(j.permissions && j.permissions.push)){ $("keyMsg").textContent="Nøkkelen kan berre lese. Den må ha Contents: Read and write."; return; }
+  }catch(e){ $("keyMsg").textContent="Får ikkje kontakt med GitHub. Prøv igjen."; return; }
+  store("krambua-nokkel", k); TOKEN = k; canWrite = true;
+  isOwner = $("bossChk").checked; store("krambua-sjef", isOwner ? "1" : null);
+  $("keyInput").value=""; showSetup(); render(); refresh();
+};
+$("copyLink").onclick = async ()=>{
+  try{ await navigator.clipboard.writeText(staffUrl()); $("copyMsg").textContent="Kopiert. Lim inn i ei melding til dei tilsette."; }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($("staffLink")); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $("copyMsg").textContent="Merka. Kopier med Ctrl+C."; }
+};
+$("hideShare").onclick = ()=>{ store("krambua-skjul-deling","1"); showSetup(); };
+showSetup();
 let lastDate = today().date;
 setInterval(()=>{
   const t=today();
