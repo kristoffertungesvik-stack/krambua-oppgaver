@@ -80,6 +80,16 @@ h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1.05;ma
 .btn.ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .linkrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .linkrow code{flex:1 1 200px;min-width:0;overflow-wrap:anywhere;font-size:.8rem;background:var(--bg);padding:8px;border-radius:8px;border:1px solid var(--line)}
+.seg{grid-template-columns:repeat(3,1fr)}
+.ed-day{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.ed-day h2{font-family:var(--display);font-weight:700;font-size:1.4rem;margin:0;text-transform:uppercase;letter-spacing:.03em}
+.ed-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.ed-row .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ed-row input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.ed-row input.sub{font-size:.9rem;color:var(--muted)}
+.ed-row .acts{display:flex;flex-direction:column;gap:4px}
+.ed-row .acts button{font:inherit;width:36px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
+.ed-bar{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:12px;background:var(--bg)}
 html{color-scheme:light}
 body{margin:0}
 [hidden]{display:none!important}
@@ -120,6 +130,7 @@ body{margin:0}
     <div class="seg" role="group" aria-label="Visning">
       <button type="button" id="vToday" aria-pressed="true">I dag</button>
       <button type="button" id="vWeek" aria-pressed="false">Oversikt</button>
+      <button type="button" id="vEdit" aria-pressed="false">Rediger</button>
     </div>
     <div class="wk" id="wkNav" hidden>
       <button type="button" id="wkPrev">‹ Førre</button>
@@ -139,12 +150,12 @@ body{margin:0}
 </div>
 <script>
 
-const DAILY = {title:"Kvar dag", intro:"Gjeld alltid, uansett kva dag det er.", tasks:[
+let DAILY = {title:"Kvar dag", intro:"Gjeld alltid, uansett kva dag det er.", tasks:[
   {id:"tining", t:"Sjekk tining før du går heim", s:"Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter."},
   {id:"rein", t:"Butikken er rein og fin", s:"Ekstremt viktig heile dagen."},
   {id:"boss", t:"Tøm det store bosset ute", s:"Både ved kaien og det som står oppe."}
 ]};
-const WEEK = {
+let WEEK = {
   1:{title:"Måndag – storvask kjøkken", tasks:[
     {id:"vifte-vask", t:"Ta ned vifta og vask ho grundig med Zalo"},
     {id:"vifte-inni", t:"Vask oppi vifta", s:"Tørk ut feitt med papir."},
@@ -210,7 +221,7 @@ function addDays(iso,n){ const d=new Date(iso+"T12:00:00Z"); d.setUTCDate(d.getU
 function pretty(iso){ return new Date(iso+"T12:00:00Z").toLocaleDateString("nn-NO",{day:"numeric",month:"long",timeZone:"UTC"}); }
 function fmtTime(ms){ return new Date(ms).toLocaleTimeString("nn-NO",{hour:"2-digit",minute:"2-digit",timeZone:TZ}); }
 function today(){ return osloParts(new Date()); }
-function tasksFor(dow){ return [DAILY, ...(WEEK[dow]?[WEEK[dow]]:[])]; }
+function tasksFor(dow){ return [DAILY, ...(WEEK[dow] && WEEK[dow].tasks.length ? [WEEK[dow]] : [])]; }
 const b64enc = s => btoa(unescape(encodeURIComponent(s)));
 const b64dec = s => decodeURIComponent(escape(atob(s.replace(/\s/g,""))));
 
@@ -239,6 +250,7 @@ async function refresh(){
   if(!TOKEN || !OWNER) return;
   let changed = false;
   try{
+    changed = (await loadTasks()) || changed;
     for(const d of week) changed = (await fetchDay(d.date)) || changed;
     online = true; $("status").textContent = "Oppdaterer seg automatisk";
   }catch(e){
@@ -288,6 +300,7 @@ function setView(v){
 }
 $("vToday").onclick=()=>setView("today");
 $("vWeek").onclick=()=>setView("week");
+$("vEdit").onclick=()=>{ editorBuilt=false; draft=null; setView("edit"); };
 $("wkPrev").onclick=()=>{weekOffset--; setView("week");};
 $("wkNext").onclick=()=>{weekOffset++; setView("week");};
 
@@ -315,6 +328,9 @@ function taskButton(task, date, isToday){
 }
 
 function render(){
+  $("vEdit").setAttribute("aria-pressed",String(view==="edit"));
+  if(view==="edit"){ if(!editorBuilt) renderEditor(); return; }
+  editorBuilt=false;
   const t = today();
   const isWeekday = t.dow <= 5;
   $("dateline").textContent = view==="week" ? "Oversikt over veka"
@@ -376,6 +392,85 @@ async function setTask(date,id,val){
     $("status").textContent = e.status===401||e.status===403 ? "Lenka har ikkje lov til å lagre. Be om ny lenke." : "Klarte ikkje lagre. Sjekk nettet og prøv igjen.";
   }
   finally{ busy=false; render(); }
+}
+
+// ---- Oppgåvelista: data/oppgaver.json (sjefen kan endre) ----
+let tasksSha = null, tasksEtag = null, editorBuilt = false, draft = null, dirty = false;
+async function loadTasks(){
+  if(view==="edit" && dirty) return false;
+  const h = headers(tasksEtag ? {"If-None-Match":tasksEtag} : {});
+  const r = await fetch(API+"oppgaver.json"+(tasksEtag?"":"?t="+Date.now()), {headers:h, cache:"no-store"});
+  if(r.status===304 || r.status===404) return false;
+  if(!r.ok) return false;
+  tasksEtag = r.headers.get("ETag");
+  const j = await r.json(); tasksSha = j.sha;
+  try{ const t = JSON.parse(b64dec(j.content)); if(t.daily && t.week){ DAILY = t.daily; WEEK = t.week; if(view==="edit"){ editorBuilt=false; draft=null; } return true; } }catch(e){}
+  return false;
+}
+const clone = o => JSON.parse(JSON.stringify(o));
+function makeDraft(){
+  draft = {0: clone(DAILY.tasks)};
+  for(let d=1; d<=5; d++) draft[d] = clone((WEEK[d] && WEEK[d].tasks) || []);
+}
+function renderEditor(){
+  if(!draft) makeDraft();
+  editorBuilt = true;
+  $("dateline").textContent = "Rediger oppgåver";
+  $("progBox").hidden = true; $("note").hidden = true;
+  const list=$("list"); list.innerHTML="";
+  const intro=document.createElement("p"); intro.className="sub"; intro.style.margin="0";
+  intro.textContent="Endre tekst, flytt med pilene, slett med ✕ eller legg til nye. Trykk Lagre når du er ferdig. Endringane kjem ut til alle innan eitt minutt.";
+  list.appendChild(intro);
+  const groups=[[0,"Kvar dag"],[1,"Måndag"],[2,"Tysdag"],[3,"Onsdag"],[4,"Torsdag"],[5,"Fredag"]];
+  for(const [k,label] of groups){
+    const box=document.createElement("section"); box.className="ed-day";
+    const h=document.createElement("h2"); h.textContent=label; box.appendChild(h);
+    draft[k].forEach((task,i)=>{
+      const row=document.createElement("div"); row.className="ed-row";
+      const f=document.createElement("div"); f.className="f";
+      const a=document.createElement("input"); a.type="text"; a.value=task.t; a.placeholder="Oppgåve"; a.id=`ed-${k}-${i}-t`;
+      a.oninput=()=>{ task.t=a.value; dirty=true; };
+      const b=document.createElement("input"); b.type="text"; b.className="sub"; b.value=task.s||""; b.placeholder="Forklaring (valfritt)"; b.id=`ed-${k}-${i}-s`;
+      b.oninput=()=>{ task.s=b.value; dirty=true; };
+      f.append(a,b);
+      const acts=document.createElement("div"); acts.className="acts";
+      const mk=(txt,lbl,fn)=>{ const x=document.createElement("button"); x.type="button"; x.textContent=txt; x.setAttribute("aria-label",lbl); x.onclick=()=>{ fn(); dirty=true; renderEditor(); }; return x; };
+      acts.append(
+        mk("↑","Flytt opp",()=>{ if(i>0) [draft[k][i-1],draft[k][i]]=[draft[k][i],draft[k][i-1]]; }),
+        mk("↓","Flytt ned",()=>{ if(i<draft[k].length-1) [draft[k][i+1],draft[k][i]]=[draft[k][i],draft[k][i+1]]; }),
+        mk("✕","Slett",()=>{ draft[k].splice(i,1); })
+      );
+      row.append(f,acts); box.appendChild(row);
+    });
+    const add=document.createElement("button"); add.type="button"; add.className="btn ghost"; add.textContent="+ Legg til oppgåve";
+    add.onclick=()=>{ draft[k].push({id:"t"+Date.now().toString(36), t:"", s:""}); dirty=true; renderEditor(); const inp=document.getElementById(`ed-${k}-${draft[k].length-1}-t`); if(inp) inp.focus(); };
+    box.appendChild(add); list.appendChild(box);
+  }
+  const bar=document.createElement("div"); bar.className="ed-bar";
+  const save=document.createElement("button"); save.type="button"; save.className="btn"; save.textContent="Lagre endringar";
+  const cancel=document.createElement("button"); cancel.type="button"; cancel.className="btn ghost"; cancel.textContent="Avbryt";
+  const msg=document.createElement("span"); msg.id="edMsg"; msg.className="sub";
+  save.onclick=()=>saveTasks(save,msg);
+  cancel.onclick=()=>{ draft=null; dirty=false; setView("today"); };
+  bar.append(save,cancel,msg); list.appendChild(bar);
+}
+async function saveTasks(btn,msg){
+  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {})})).filter(x=>x.t);
+  const newDaily = Object.assign({}, DAILY, {tasks: clean(draft[0])});
+  const newWeek = clone(WEEK);
+  for(let d=1; d<=5; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
+  btn.disabled=true; msg.textContent="Lagrar …";
+  try{
+    for(let attempt=0; attempt<3; attempt++){
+      const body={message:"Oppgåvelista endra", content:b64enc(JSON.stringify({daily:newDaily, week:newWeek},null,1))};
+      if(tasksSha) body.sha=tasksSha;
+      const r=await fetch(API+"oppgaver.json",{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
+      if(r.ok){ const j=await r.json(); tasksSha=j.content.sha; tasksEtag=null; DAILY=newDaily; WEEK=newWeek; dirty=false; draft=null; msg.textContent="Lagra."; setView("today"); return; }
+      if(r.status===409||r.status===422){ const g=await fetch(API+"oppgaver.json?t="+Date.now(),{headers:headers(),cache:"no-store"}); if(g.ok){ tasksSha=(await g.json()).sha; } continue; }
+      throw new Error(r.status);
+    }
+    throw new Error("konflikt");
+  }catch(e){ msg.textContent="Klarte ikkje lagre. Prøv igjen."; btn.disabled=false; }
 }
 
 // ---- Førstegongsoppsett og deling ----
