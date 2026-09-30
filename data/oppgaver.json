@@ -1,0 +1,141 @@
+{
+ "daily": {
+  "title": "Kvar dag",
+  "intro": "Gjeld alltid, uansett kva dag det er.",
+  "tasks": [
+   {
+    "id": "tining",
+    "t": "Sjekk tining før du går heim",
+    "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter."
+   },
+   {
+    "id": "rein",
+    "t": "Butikken er rein og fin",
+    "s": "Ekstremt viktig heile dagen."
+   },
+   {
+    "id": "boss",
+    "t": "Tøm det store bosset ute",
+    "s": "Både ved kaien og det som står oppe."
+   }
+  ]
+ },
+ "week": {
+  "1": {
+   "title": "Måndag – storvask kjøkken",
+   "tasks": [
+    {
+     "id": "vifte-vask",
+     "t": "Ta ned vifta og vask ho grundig med Zalo"
+    },
+    {
+     "id": "vifte-inni",
+     "t": "Vask oppi vifta",
+     "s": "Tørk ut feitt med papir."
+    },
+    {
+     "id": "vegg-spray",
+     "t": "Vask veggen bak steikeplater og vask",
+     "s": "Bruk feittløysande spray."
+    },
+    {
+     "id": "vegg-stal",
+     "t": "Stålglans på veggane",
+     "s": "Berre veggane."
+    },
+    {
+     "id": "salat-golv",
+     "t": "Dra fram salatbaren og vask bak",
+     "s": "Golv, vegg og hjørnet under benken."
+    },
+    {
+     "id": "salat-inni",
+     "t": "Vask oppi salatbaren og alle behaldarane"
+    },
+    {
+     "id": "polse",
+     "t": "Vask under pølsegrillen og pølseplata"
+    },
+    {
+     "id": "highspeed",
+     "t": "Vask bak High Speed-omnen"
+    },
+    {
+     "id": "manglar",
+     "t": "Skriv ned varer som manglar"
+    }
+   ]
+  },
+  "2": {
+   "title": "Tysdag",
+   "tasks": [
+    {
+     "id": "softis",
+     "t": "Vask softismaskinen"
+    }
+   ]
+  },
+  "3": {
+   "title": "Onsdag – levering frå ASKO",
+   "intro": "Gjer alt klart så det går kjapt. Ta varene i denne rekkefølgja.",
+   "tasks": [
+    {
+     "id": "asko-klar",
+     "t": "Gjer alt klart til leveringa"
+    },
+    {
+     "id": "asko-frys",
+     "t": "Frysevarer inn først",
+     "s": "Spesielt is – den smeltar raskt."
+    },
+    {
+     "id": "asko-brod",
+     "t": "Brødvarer inn kjapt",
+     "s": "Dei tiner raskt."
+    },
+    {
+     "id": "asko-rest",
+     "t": "Resten av varene inn"
+    },
+    {
+     "id": "asko-dato",
+     "t": "Nye varer bakerst, gamle fremst",
+     "s": "Så me sel etter rett dato."
+    }
+   ]
+  },
+  "4": {
+   "title": "Torsdag",
+   "tasks": []
+  },
+  "5": {
+   "title": "Fredag – påfyll og vask før helga",
+   "tasks": [
+    {
+     "id": "brus",
+     "t": "Fyll brusskapet heilt opp"
+    },
+    {
+     "id": "kjol",
+     "t": "Vask alle overflater i kjøleskap og frysarar"
+    },
+    {
+     "id": "bord",
+     "t": "Vask alle borda ute"
+    },
+    {
+     "id": "golv-ute",
+     "t": "Vask golvet ute under taket"
+    },
+    {
+     "id": "toalett",
+     "t": "Vask personaltoalettet"
+    },
+    {
+     "id": "vaskerom",
+     "t": "Vask vaskerommet"
+    }
+   ]
+  }
+ }
+}
