@@ -11,12 +11,37 @@
    {
     "id": "rein",
     "t": "Butikken er rein og fin",
-    "s": "Ekstremt viktig heile dagen."
+    "s": "Ekstremt viktig heile dagen. Men butikken må vaskast grundig kvar kveld"
    },
    {
     "id": "boss",
     "t": "Tøm det store bosset ute",
     "s": "Både ved kaien og det som står oppe."
+   },
+   {
+    "id": "tmupnirxo",
+    "t": "Skriv ner om noko må bestillast",
+    "s": "Skriv ner på lappar om me er tomme fopr varer eller om kundar ynskjer ei vare."
+   },
+   {
+    "id": "tmupnj580",
+    "t": "Bosset inne",
+    "s": "Bosset inn må tømmast og ny pose må oppi før ein går heim."
+   },
+   {
+    "id": "tmupnk6xa",
+    "t": "Skru av alle apparat",
+    "s": "Alle plater, grillar og omnar må skruast av før ein går heim"
+   },
+   {
+    "id": "tmupnlchj",
+    "t": "Herre og Dame - toalett",
+    "s": "Dei skal vera stengde og berre opnast i nødstilfelle."
+   },
+   {
+    "id": "tmupnm9rp",
+    "t": "Vaskerom",
+    "s": "Vaskerommet skal vera låst om natta"
    }
   ]
  },
@@ -101,12 +126,28 @@
      "id": "asko-dato",
      "t": "Nye varer bakerst, gamle fremst",
      "s": "Så me sel etter rett dato."
+    },
+    {
+     "id": "tmupnn05e",
+     "t": "Feil og eller avvik",
+     "s": "Om noko er levert feil eller noko manglar må dette meldast snarast."
     }
    ]
   },
   "4": {
    "title": "Torsdag",
-   "tasks": []
+   "tasks": [
+    {
+     "id": "tmupnh942",
+     "t": "Bytt olje på frityren",
+     "s": "Vask behaldaren og varmeaparatet. Dertsom olja ikkje er veldig skitten og mørk kan ein bruke olja på nytt, om ikjje må den byttast ut"
+    },
+    {
+     "id": "tmupnntv4",
+     "t": "Vask over glassoverflater",
+     "s": "Isdisk, dører, vindauge og kjøleskap mm."
+    }
+   ]
   },
   "5": {
    "title": "Fredag – påfyll og vask før helga",
@@ -133,7 +174,8 @@
     },
     {
      "id": "vaskerom",
-     "t": "Vask vaskerommet"
+     "t": "Vask vaskerommet",
+     "s": "På bakrommet"
     }
    ]
   }
