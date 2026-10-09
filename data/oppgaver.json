@@ -6,17 +6,20 @@
    {
     "id": "tining",
     "t": "Sjekk tining før du går heim",
-    "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter."
+    "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter.",
+    "viktig": true
    },
    {
     "id": "rein",
     "t": "Butikken er rein og fin",
-    "s": "Ekstremt viktig heile dagen. Men butikken må vaskast grundig kvar kveld"
+    "s": "Ekstremt viktig heile dagen. Men butikken må vaskast grundig kvar kveld",
+    "viktig": true
    },
    {
     "id": "boss",
     "t": "Tøm det store bosset ute",
-    "s": "Både ved kaien og det som står oppe."
+    "s": "Både ved kaien og det som står oppe.",
+    "viktig": true
    },
    {
     "id": "tmupnirxo",
@@ -50,13 +53,15 @@
    },
    {
     "id": "tmv0k9u2n",
-    "t": "VIKTIG! Sjekk uteområde (under tak)",
-    "s": "Vask borda, kost gulvet, skru av lampar."
+    "t": "VIKTIG! Sjekk uteområde (under tak) før du går heim",
+    "s": "Vask borda, kost gulvet, skru av lampar.",
+    "viktig": true
    },
    {
     "id": "tmv0lq14f",
     "t": "Vask golvet inne på jernvarerommet",
-    "s": "Dette MÅ gjerast kvar dag."
+    "s": "Dette MÅ gjerast kvar dag.",
+    "viktig": true
    }
   ]
  },
