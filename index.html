@@ -168,7 +168,48 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ed-bar .btn{padding:11px 18px;font-size:15px}
 .ed-bar .btn.ghost{background:rgba(255,255,255,.6)}
 .ed-bar #edMsg{padding-inline:8px;font-size:13px}
+.ed-bar{flex-wrap:nowrap}
+.ed-bar .btn{padding:10px 13px;font-size:14px;white-space:nowrap}
+.ed-bar #edMsg:empty{display:none}
+.ed-row .acts{gap:4px}
+.ed-row .acts button{width:28px;height:28px;font-size:13px}
 #list > p.sub{padding-inline:4px}
+/* ---------- viktig ---------- */
+.task.viktig:not(.is-done){background:linear-gradient(90deg,rgba(255,149,0,.10),rgba(255,149,0,.035) 55%,var(--cell))}
+.task.viktig:not(.is-done) .box{border-color:#ff9500;border-width:2px}
+.task.viktig .txt b{font-weight:600}
+.vtag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.01em;color:#c45f00;background:rgba(255,149,0,.16);padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:2px}
+.task.is-done .vtag{color:var(--ink2);background:var(--fill2)}
+.ed-row.viktig{background:linear-gradient(90deg,rgba(255,149,0,.10),var(--cell) 60%)}
+.ed-row .acts button.flag{font-weight:800}
+.ed-row .acts button.flag.on{background:#ff9500;color:#fff}
+
+/* ---------- kommentar og bilete ---------- */
+.hit{display:grid;place-items:center;padding:12px;margin:-12px;flex:none;border-radius:50%}
+.more{margin-left:auto;flex:none;color:var(--ink3);display:grid;place-items:center;padding-left:6px}
+.task:not(.is-done) .more{color:var(--accent);opacity:.75}
+.cmt{display:block;margin-top:5px;font-size:14px;color:var(--ink);background:var(--fill2);border-radius:10px;padding:6px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.thumbs{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.thumbs img{width:46px;height:46px;object-fit:cover;border-radius:9px;background:var(--fill)}
+.tip{margin:-14px 4px 0;font-size:13px;color:var(--ink2)}
+.sheet{max-height:calc(88vh - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain}
+.sheet .tsub{margin:-4px 0 0;color:var(--ink2);font-size:15px;text-align:center}
+.sheet .tswho{margin:0;text-align:center;font-size:14px;color:var(--done);font-weight:600}
+.sheet.viktig h2::before{content:"! ";color:#ff9500}
+.sheet textarea{font:inherit;font-size:17px;padding:13px 15px;border:none;border-radius:14px;background:var(--fill);color:var(--ink);width:100%;box-sizing:border-box;outline:none;resize:vertical;min-height:84px}
+.sheet textarea:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
+.sheet textarea[readonly]{background:var(--fill2)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.ph{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--fill);max-width:100%}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.ph button{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,.55);color:#fff;font-size:13px;line-height:1;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.addph{aspect-ratio:1;border-radius:14px;border:1.5px dashed rgba(0,122,255,.45);background:rgba(0,122,255,.06);color:var(--accent);font:inherit;font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.sheet .row2{display:flex;gap:8px}
+.sheet .row2 .btn{flex:1}
+.btn.danger{background:rgba(255,59,48,.1);color:#ff3b30}
+#tsMsg{margin:0;text-align:center;font-size:13px;color:var(--ink2);min-height:1em}
+.lightbox{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;border-radius:12px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -186,6 +227,19 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
   </header>
 
   <div class="scrim" id="scrim" hidden></div>
+  <div class="sheet" id="taskSheet" hidden role="dialog" aria-labelledby="tsTitle">
+    <div class="grab"></div>
+    <h2 id="tsTitle">Oppgåve</h2>
+    <p class="tsub" id="tsSub"></p>
+    <p class="tswho" id="tsWho"></p>
+    <textarea id="tsComment" rows="3" placeholder="Kommentar (valfritt) – t.d. kva som manglar eller noko sjefen bør vite"></textarea>
+    <div class="photos" id="tsPhotos"></div>
+    <input type="file" id="tsFile" accept="image/*" multiple hidden>
+    <p id="tsMsg"></p>
+    <button class="btn" type="button" id="tsDone">Merk som gjort</button>
+    <div class="row2"><button class="btn ghost" type="button" id="tsClose">Avbryt</button><button class="btn danger" type="button" id="tsUndo">Angre avkryssing</button></div>
+  </div>
+  <div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""></div>
   <div class="sheet" id="nameSheet" hidden role="dialog" aria-labelledby="sheetTitle">
     <div class="grab"></div>
     <h2 id="sheetTitle">Kven er du?</h2>
@@ -395,24 +449,30 @@ $("wkNext").onclick=()=>{weekOffset++; setView("week");};
 
 function taskButton(task, date, isToday){
   const d = (data[date]||{})[task.id];
+  const editable = isToday && canWrite;
   const item = document.createElement("div"); item.className="item";
   const b = document.createElement("button"); b.type="button";
-  b.className = "task" + (d ? " is-done" : "") + (d && window.__just===task.id ? " just" : "");
-  b.disabled = !isToday || !canWrite || !!d || busy;
-  const box = document.createElement("span"); box.className="box"; box.setAttribute("aria-hidden","true");
+  b.className = "task" + (d ? " is-done" : "") + (task.viktig ? " viktig" : "") + (d && window.__just===task.id ? " just" : "");
+  b.disabled = busy || (!d && !editable);
+  const hit = document.createElement("span"); hit.className="hit"; hit.setAttribute("aria-hidden","true");
+  const box = document.createElement("span"); box.className="box"; hit.appendChild(box);
   const txt = document.createElement("span"); txt.className="txt";
-  const bt = document.createElement("b"); bt.textContent = task.t; txt.appendChild(bt);
+  const bt = document.createElement("b"); bt.textContent = task.t;
+  if(task.viktig){ const v=document.createElement("span"); v.className="vtag"; v.textContent="Viktig"; bt.appendChild(v); }
+  txt.appendChild(bt);
   if(task.s){ const sm=document.createElement("small"); sm.textContent=task.s; txt.appendChild(sm); }
-  if(d){ const w=document.createElement("span"); w.className="who"; w.textContent=`Gjort av ${d.namn} kl. ${fmtTime(d.tid)}`; txt.appendChild(w); }
-  b.append(box, txt);
-  b.setAttribute("aria-label", task.t + (d ? `, gjort av ${d.namn}` : ", ikkje gjort"));
-  b.onclick = ()=>markDone(date, task.id);
-  item.appendChild(b);
-  if(d && isToday && canWrite){
-    const u=document.createElement("button"); u.type="button"; u.className="undo"; u.textContent="Angre";
-    u.disabled = busy;
-    u.onclick=()=>setTask(date, task.id, null); item.appendChild(u);
+  if(d){
+    const w=document.createElement("span"); w.className="who"; w.textContent=`Gjort av ${d.namn} kl. ${fmtTime(d.tid)}`; txt.appendChild(w);
+    if(d.kommentar){ const c=document.createElement("span"); c.className="cmt"; c.textContent=d.kommentar; txt.appendChild(c); }
+    if(d.bilete && d.bilete.length){ const th=document.createElement("span"); th.className="thumbs";
+      d.bilete.forEach(p=>{ const im=document.createElement("img"); im.src=imgUrl(p); im.alt=""; im.loading="lazy"; th.appendChild(im); }); txt.appendChild(th); }
   }
+  const more = document.createElement("span"); more.className="more";
+  more.innerHTML = d ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>' : (editable ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg>' : '');
+  b.append(hit, txt, more);
+  b.setAttribute("aria-label", (task.viktig?"Viktig: ":"") + task.t + (d ? `, gjort av ${d.namn}` : ", ikkje gjort"));
+  b.onclick = (e)=>{ if(!d && editable && e.target.closest(".hit")) return markDone(date, task.id); openTaskSheet(date, task, isToday); };
+  item.appendChild(b);
   return item;
 }
 
@@ -450,6 +510,7 @@ function render(){
     if(isToday){ const p=document.createElement("span"); p.className="pill"; p.textContent="I dag"; h.appendChild(p); }
     const m=document.createElement("span"); m.className="meta"; m.textContent=`${pretty(d.date)} · ${n}/${all.length}`;
     head.append(h,m); sec.appendChild(head);
+    if(isToday && canWrite && view!=="week"){ const tip=document.createElement("p"); tip.className="tip"; tip.textContent="Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til kommentar eller bilete."; sec.appendChild(tip); }
     for(const grp of tasksFor(d.dow)){
       const g=document.createElement("div"); g.className="group";
       const h3=document.createElement("h3");
@@ -463,14 +524,14 @@ function render(){
   }
 }
 
-function markDone(date,id){
+function markDone(date,id,extra){
   const namn=nameInput.value.trim();
   if(!namn){
     $("nameBox").classList.add("need");
     $("nameHint").textContent="Skriv namnet ditt først, så veit me kven som gjorde det.";
     openSheet(); return;
   }
-  setTask(date,id,{namn, tid:Date.now()});
+  return setTask(date,id,Object.assign({namn, tid:Date.now()}, extra||{}));
 }
 async function setTask(date,id,val){
   if(busy) return; busy=true;
@@ -528,7 +589,10 @@ function renderEditor(){
       f.append(a,b);
       const acts=document.createElement("div"); acts.className="acts";
       const mk=(txt,lbl,fn)=>{ const x=document.createElement("button"); x.type="button"; x.textContent=txt; x.setAttribute("aria-label",lbl); x.onclick=()=>{ fn(); dirty=true; renderEditor(); }; return x; };
+      if(task.viktig) row.classList.add("viktig");
+      const fl = mk("!","Merk som viktig",()=>{ task.viktig = !task.viktig; }); fl.classList.add("flag"); if(task.viktig) fl.classList.add("on"); fl.title="Viktig";
       acts.append(
+        fl,
         mk("↑","Flytt opp",()=>{ if(i>0) [draft[k][i-1],draft[k][i]]=[draft[k][i],draft[k][i-1]]; }),
         mk("↓","Flytt ned",()=>{ if(i<draft[k].length-1) [draft[k][i+1],draft[k][i]]=[draft[k][i],draft[k][i+1]]; }),
         mk("✕","Slett",()=>{ draft[k].splice(i,1); })
@@ -550,7 +614,7 @@ function renderEditor(){
   bar.append(save,cancel,keyBtn,msg); list.appendChild(bar);
 }
 async function saveTasks(btn,msg){
-  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {})})).filter(x=>x.t);
+  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {})})).filter(x=>x.t);
   const newDaily = Object.assign({}, DAILY, {tasks: clean(draft[0])});
   const newWeek = clone(WEEK);
   for(let d=1; d<=5; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
@@ -605,6 +669,86 @@ $("avatarBtn").onclick=openSheet; $("sheetDone").onclick=closeSheet; $("scrim").
 nameInput.addEventListener("input", setAvatar);
 nameInput.addEventListener("keydown", e=>{ if(e.key==="Enter") closeSheet(); });
 setAvatar(); if(!nameInput.value.trim() && TOKEN) openSheet();
+// ---- Oppgåve-ark: kommentar og bilete ----
+const REPO_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
+const imgCache = {};
+function imgUrl(p){ return imgCache[p] || `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${p}`; }
+let ts = null;
+function showEl(el){ $("scrim").hidden=false; el.hidden=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); el.classList.add("on"); })); }
+function hideEl(el){ el.classList.remove("on"); if($("nameSheet").hidden || !$("nameSheet").classList.contains("on")) $("scrim").classList.remove("on"); setTimeout(()=>{ el.hidden=true; if(!$("scrim").classList.contains("on")) $("scrim").hidden=true; },450); }
+function openTaskSheet(date, task, isToday){
+  const d = (data[date]||{})[task.id];
+  const editable = isToday && canWrite;
+  ts = {date, task, d, editable, keep:[...((d&&d.bilete)||[])], add:[], undoArm:false};
+  const sh=$("taskSheet"); sh.classList.toggle("viktig", !!task.viktig);
+  $("tsTitle").textContent = task.t;
+  $("tsSub").textContent = task.s || ""; $("tsSub").hidden = !task.s;
+  $("tsWho").textContent = d ? `✓ Gjort av ${d.namn} kl. ${fmtTime(d.tid)}` : ""; $("tsWho").hidden = !d;
+  const c=$("tsComment"); c.value = (d && d.kommentar) || ""; c.readOnly = !editable; c.hidden = !editable && !c.value;
+  $("tsDone").textContent = d ? "Lagre" : "Merk som gjort"; $("tsDone").hidden = !editable; $("tsDone").disabled=false;
+  $("tsUndo").hidden = !(d && editable); $("tsUndo").textContent="Angre avkryssing";
+  $("tsClose").textContent = editable ? "Avbryt" : "Lukk";
+  $("tsMsg").textContent = "";
+  renderTsPhotos(); showEl(sh);
+}
+function renderTsPhotos(){
+  const box=$("tsPhotos"); box.innerHTML="";
+  const addThumb=(src, onRemove)=>{ const w=document.createElement("div"); w.className="ph"; const im=document.createElement("img"); im.src=src; im.alt="Bilete"; im.onclick=()=>{ $("lbImg").src=src; $("lightbox").hidden=false; }; w.appendChild(im);
+    if(onRemove && ts.editable){ const x=document.createElement("button"); x.type="button"; x.textContent="✕"; x.setAttribute("aria-label","Fjern bilete"); x.onclick=()=>{ onRemove(); renderTsPhotos(); }; w.appendChild(x); } box.appendChild(w); };
+  ts.keep.forEach((p,i)=>addThumb(imgUrl(p), ()=>ts.keep.splice(i,1)));
+  ts.add.forEach((u,i)=>addThumb(u, ()=>ts.add.splice(i,1)));
+  if(ts.editable && ts.keep.length+ts.add.length < 4){ const a=document.createElement("button"); a.type="button"; a.className="addph";
+    a.innerHTML='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg><span>Legg til bilete</span>';
+    a.onclick=()=>$("tsFile").click(); box.appendChild(a); }
+  box.hidden = !ts.editable && !ts.keep.length;
+}
+async function shrink(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=new Image(); await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+    const max=1600, k=Math.min(1, max/Math.max(img.naturalWidth, img.naturalHeight));
+    const cv=document.createElement("canvas"); cv.width=Math.round(img.naturalWidth*k); cv.height=Math.round(img.naturalHeight*k);
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    return cv.toDataURL("image/jpeg",0.78);
+  } finally { URL.revokeObjectURL(url); }
+}
+$("tsFile").addEventListener("change", async e=>{
+  const files=[...e.target.files]; e.target.value="";
+  for(const f of files){ if(ts.keep.length+ts.add.length>=4) break;
+    try{ ts.add.push(await shrink(f)); }catch(err){ $("tsMsg").textContent="Klarte ikkje lese biletet. Prøv eit anna."; } }
+  renderTsPhotos();
+});
+async function uploadImg(date, id, dataUrl, i){
+  const path=`data/bilete/${date}/${id}-${Date.now()}-${i}.jpg`;
+  const r=await fetch(REPO_API+path,{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify({message:`Bilete: ${id} (${date})`, content:dataUrl.split(",")[1]})});
+  if(!r.ok){ const e=new Error("bilete "+r.status); e.status=r.status; throw e; }
+  imgCache[path]=dataUrl; return path;
+}
+$("tsDone").onclick = async ()=>{
+  if(!ts) return;
+  const namn=nameInput.value.trim();
+  if(!namn){ hideEl($("taskSheet")); setTimeout(()=>openSheet(),300); return; }
+  const btn=$("tsDone"); btn.disabled=true;
+  try{
+    const paths=[];
+    for(let i=0;i<ts.add.length;i++){ $("tsMsg").textContent=`Lastar opp bilete ${i+1} av ${ts.add.length} …`; paths.push(await uploadImg(ts.date, ts.task.id, ts.add[i], i)); }
+    const kommentar=$("tsComment").value.trim();
+    const bilete=[...ts.keep, ...paths];
+    const val = ts.d ? Object.assign({}, ts.d) : {namn, tid:Date.now()};
+    if(kommentar) val.kommentar=kommentar; else delete val.kommentar;
+    if(bilete.length) val.bilete=bilete; else delete val.bilete;
+    const {date, task} = ts; hideEl($("taskSheet")); ts=null;
+    await setTask(date, task.id, val);
+  }catch(e){ $("tsMsg").textContent = e.status===401||e.status===403 ? "Lenka har ikkje lov til å lagre bilete." : "Klarte ikkje laste opp. Sjekk nettet og prøv igjen."; btn.disabled=false; }
+};
+$("tsUndo").onclick = ()=>{
+  if(!ts) return;
+  if(!ts.undoArm){ ts.undoArm=true; $("tsUndo").textContent="Trykk igjen for å angre"; return; }
+  const {date, task} = ts; hideEl($("taskSheet")); ts=null; setTask(date, task.id, null);
+};
+$("tsClose").onclick = ()=>{ hideEl($("taskSheet")); ts=null; };
+$("scrim").onclick = ()=>{ if(!$("taskSheet").hidden){ hideEl($("taskSheet")); ts=null; } else closeSheet(); };
+$("lightbox").onclick = ()=>{ $("lightbox").hidden=true; $("lbImg").src=""; };
 const navbar=$("navbar"); addEventListener("scroll",()=>navbar.classList.toggle("on", scrollY>70),{passive:true});
 let lastDate = today().date;
 setInterval(()=>{
