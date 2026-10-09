@@ -34,7 +34,8 @@
    {
     "id": "tmupnk6xa",
     "t": "Skru av alle apparat",
-    "s": "Alle plater, grillar og omnar må skruast av før ein går heim"
+    "s": "Alle plater, grillar og omnar må skruast av før ein går heim",
+    "viktig": true
    },
    {
     "id": "tmupnlchj",
