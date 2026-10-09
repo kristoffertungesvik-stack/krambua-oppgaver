@@ -328,7 +328,7 @@ let WEEK = {
   ]}
 };
 
-const DAYNAMES = ["Måndag","Tysdag","Onsdag","Torsdag","Fredag"];
+const DAYNAMES = ["Måndag","Tysdag","Onsdag","Torsdag","Fredag","Laurdag","Sundag"];
 const TZ = "Europe/Oslo";
 const $ = id => document.getElementById(id);
 const nameInput = $("navn");
@@ -428,10 +428,10 @@ function buildWeek(){
   const t = today();
   if(view==="week"){
     const monday = addDays(t.date, 1 - t.dow + weekOffset*7);
-    week = [1,2,3,4,5].map(dow=>({dow, date:addDays(monday, dow-1)}));
+    week = [1,2,3,4,5,6,7].map(dow=>({dow, date:addDays(monday, dow-1)}));
     $("wkLabel").textContent = `Veke ${isoWeek(monday)}` + (weekOffset===0 ? " · denne veka" : "");
   } else {
-    week = t.dow <= 5 ? [{dow:t.dow, date:t.date}] : [];
+    week = [{dow:t.dow, date:t.date}];
   }
 }
 function setView(v){
@@ -481,7 +481,7 @@ function render(){
   if(view==="edit"){ if(!editorBuilt) renderEditor(); return; }
   editorBuilt=false;
   const t = today();
-  const isWeekday = t.dow <= 5;
+  const isWeekday = true;
   $("dateline").textContent = view==="week" ? "Oversikt over veka"
     : isWeekday ? `${DAYNAMES[t.dow-1]} ${pretty(t.date)}` : "Helg – ingen oppgåver i dag. Lista kjem att måndag.";
   $("bigTitle").textContent = view==="week" ? "Oversikt" : "I dag";
@@ -564,7 +564,7 @@ async function loadTasks(){
 const clone = o => JSON.parse(JSON.stringify(o));
 function makeDraft(){
   draft = {0: clone(DAILY.tasks)};
-  for(let d=1; d<=5; d++) draft[d] = clone((WEEK[d] && WEEK[d].tasks) || []);
+  for(let d=1; d<=7; d++) draft[d] = clone((WEEK[d] && WEEK[d].tasks) || []);
 }
 function renderEditor(){
   if(!draft) makeDraft();
@@ -575,7 +575,7 @@ function renderEditor(){
   const intro=document.createElement("p"); intro.className="sub"; intro.style.margin="0";
   intro.textContent="Endre tekst, flytt med pilene, slett med ✕ eller legg til nye. Trykk Lagre når du er ferdig. Endringane kjem ut til alle innan eitt minutt.";
   list.appendChild(intro);
-  const groups=[[0,"Kvar dag"],[1,"Måndag"],[2,"Tysdag"],[3,"Onsdag"],[4,"Torsdag"],[5,"Fredag"]];
+  const groups=[[0,"Kvar dag"],[1,"Måndag"],[2,"Tysdag"],[3,"Onsdag"],[4,"Torsdag"],[5,"Fredag"],[6,"Laurdag"],[7,"Sundag"]];
   for(const [k,label] of groups){
     const box=document.createElement("section"); box.className="ed-day";
     const h=document.createElement("h2"); h.textContent=label; box.appendChild(h);
@@ -617,7 +617,7 @@ async function saveTasks(btn,msg){
   const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {})})).filter(x=>x.t);
   const newDaily = Object.assign({}, DAILY, {tasks: clean(draft[0])});
   const newWeek = clone(WEEK);
-  for(let d=1; d<=5; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
+  for(let d=1; d<=7; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
   btn.disabled=true; msg.textContent="Lagrar …";
   try{
     for(let attempt=0; attempt<3; attempt++){
