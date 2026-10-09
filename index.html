@@ -168,6 +168,10 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ed-bar .btn{padding:11px 18px;font-size:15px}
 .ed-bar .btn.ghost{background:rgba(255,255,255,.6)}
 .ed-bar #edMsg{padding-inline:8px;font-size:13px}
+.ed-msg{font:inherit;font-size:16px;padding:12px 16px;border:none;border-radius:16px;background:var(--cell);color:var(--ink);width:100%;box-sizing:border-box;outline:none;resize:vertical;min-height:70px}
+.ed-msg:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
+.tip{white-space:pre-wrap}
+.tip.beskjed{margin:-12px 0 0;font-size:15px;line-height:1.4;color:var(--ink);background:var(--cell);border-radius:16px;padding:12px 16px}
 .ed-bar{flex-wrap:nowrap}
 .ed-bar .btn{padding:10px 13px;font-size:14px;white-space:nowrap}
 .ed-bar #edMsg:empty{display:none}
@@ -510,7 +514,7 @@ function render(){
     if(isToday){ const p=document.createElement("span"); p.className="pill"; p.textContent="I dag"; h.appendChild(p); }
     const m=document.createElement("span"); m.className="meta"; m.textContent=`${pretty(d.date)} · ${n}/${all.length}`;
     head.append(h,m); sec.appendChild(head);
-    if(isToday && canWrite && view!=="week"){ const tip=document.createElement("p"); tip.className="tip"; tip.textContent="Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til kommentar eller bilete."; sec.appendChild(tip); }
+    if(isToday && view!=="week"){ const txt=(MELDING===null ? DEFAULT_TIP : MELDING).trim(); if(txt){ const tip=document.createElement("p"); tip.className="tip"+(MELDING!==null && MELDING!==DEFAULT_TIP ? " beskjed" : ""); tip.textContent=txt; sec.appendChild(tip); } }
     for(const grp of tasksFor(d.dow)){
       const g=document.createElement("div"); g.className="group";
       const h3=document.createElement("h3");
@@ -558,10 +562,12 @@ async function loadTasks(){
   if(!r.ok) return false;
   tasksEtag = r.headers.get("ETag");
   const j = await r.json(); tasksSha = j.sha;
-  try{ const t = JSON.parse(b64dec(j.content)); if(t.daily && t.week){ DAILY = t.daily; WEEK = t.week; if(view==="edit"){ editorBuilt=false; draft=null; } return true; } }catch(e){}
+  try{ const t = JSON.parse(b64dec(j.content)); if(t.daily && t.week){ DAILY = t.daily; WEEK = t.week; MELDING = (typeof t.melding==="string") ? t.melding : null; if(view==="edit"){ editorBuilt=false; draft=null; } return true; } }catch(e){}
   return false;
 }
 const clone = o => JSON.parse(JSON.stringify(o));
+const DEFAULT_TIP = "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til kommentar eller bilete.";
+let MELDING = null;
 function makeDraft(){
   draft = {0: clone(DAILY.tasks)};
   for(let d=1; d<=7; d++) draft[d] = clone((WEEK[d] && WEEK[d].tasks) || []);
@@ -575,6 +581,12 @@ function renderEditor(){
   const intro=document.createElement("p"); intro.className="sub"; intro.style.margin="0";
   intro.textContent="Endre tekst, flytt med pilene, slett med ✕ eller legg til nye. Trykk Lagre når du er ferdig. Endringane kjem ut til alle innan eitt minutt.";
   list.appendChild(intro);
+  if(draft.melding===undefined) draft.melding = (MELDING===null ? DEFAULT_TIP : MELDING);
+  const mbox=document.createElement("section"); mbox.className="ed-day";
+  const mh=document.createElement("h2"); mh.textContent="Tekst øvst under «I dag»"; mbox.appendChild(mh);
+  const ma=document.createElement("textarea"); ma.id="edMelding"; ma.className="ed-msg"; ma.rows=3; ma.value=draft.melding; ma.placeholder="Skriv ein beskjed til dei tilsette (la stå tomt for å skjule)";
+  ma.oninput=()=>{ draft.melding=ma.value; dirty=true; };
+  mbox.appendChild(ma); list.appendChild(mbox);
   const groups=[[0,"Kvar dag"],[1,"Måndag"],[2,"Tysdag"],[3,"Onsdag"],[4,"Torsdag"],[5,"Fredag"],[6,"Laurdag"],[7,"Sundag"]];
   for(const [k,label] of groups){
     const box=document.createElement("section"); box.className="ed-day";
@@ -621,10 +633,10 @@ async function saveTasks(btn,msg){
   btn.disabled=true; msg.textContent="Lagrar …";
   try{
     for(let attempt=0; attempt<3; attempt++){
-      const body={message:"Oppgåvelista endra", content:b64enc(JSON.stringify({daily:newDaily, week:newWeek},null,1))};
+      const body={message:"Oppgåvelista endra", content:b64enc(JSON.stringify({daily:newDaily, week:newWeek, melding:(draft.melding||"").trim()},null,1))};
       if(tasksSha) body.sha=tasksSha;
       const r=await fetch(API+"oppgaver.json",{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
-      if(r.ok){ const j=await r.json(); tasksSha=j.content.sha; tasksEtag=null; DAILY=newDaily; WEEK=newWeek; dirty=false; draft=null; msg.textContent="Lagra."; setView("today"); return; }
+      if(r.ok){ const j=await r.json(); tasksSha=j.content.sha; tasksEtag=null; DAILY=newDaily; WEEK=newWeek; MELDING=(draft.melding||"").trim(); dirty=false; draft=null; msg.textContent="Lagra."; setView("today"); return; }
       if(r.status===409||r.status===422){ const g=await fetch(API+"oppgaver.json?t="+Date.now(),{headers:headers(),cache:"no-store"}); if(g.ok){ tasksSha=(await g.json()).sha; } continue; }
       throw new Error(r.status);
     }
