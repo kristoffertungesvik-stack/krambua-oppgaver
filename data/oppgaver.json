@@ -22,6 +22,24 @@
     "viktig": true
    },
    {
+    "id": "tmupnk6xa",
+    "t": "Skru av alle apparat",
+    "s": "Alle plater, grillar og omnar må skruast av før ein går heim",
+    "viktig": true
+   },
+   {
+    "id": "tmv0lq14f",
+    "t": "Vask golvet inne på jernvarerommet",
+    "s": "Dette MÅ gjerast kvar dag.",
+    "viktig": true
+   },
+   {
+    "id": "tmv0k9u2n",
+    "t": "VIKTIG! Sjekk uteområde (under tak) før du går heim",
+    "s": "Vask borda, kost gulvet, skru av lampar.",
+    "viktig": true
+   },
+   {
     "id": "tmupnirxo",
     "t": "Skriv ner om noko må bestillast",
     "s": "Skriv ner på lappar om me er tomme fopr varer eller om kundar ynskjer ei vare."
@@ -30,12 +48,6 @@
     "id": "tmupnj580",
     "t": "Bosset inne",
     "s": "Bosset inn må tømmast og ny pose må oppi før ein går heim."
-   },
-   {
-    "id": "tmupnk6xa",
-    "t": "Skru av alle apparat",
-    "s": "Alle plater, grillar og omnar må skruast av før ein går heim",
-    "viktig": true
    },
    {
     "id": "tmupnlchj",
@@ -51,18 +63,6 @@
     "id": "tmuv0sjbi",
     "t": "Vask over kjøkkenområdet grundig",
     "s": "Det skal ikkje vera rotete, skittent eller mykje avfall i kjøkkenområdet. Vask grundig over alle overflater slik at det ikkje er feitt rundt plaster og på benkane"
-   },
-   {
-    "id": "tmv0k9u2n",
-    "t": "VIKTIG! Sjekk uteområde (under tak) før du går heim",
-    "s": "Vask borda, kost gulvet, skru av lampar.",
-    "viktig": true
-   },
-   {
-    "id": "tmv0lq14f",
-    "t": "Vask golvet inne på jernvarerommet",
-    "s": "Dette MÅ gjerast kvar dag.",
-    "viktig": true
    }
   ]
  },
