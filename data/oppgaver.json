@@ -209,6 +209,15 @@
      "s": "På bakrommet"
     }
    ]
+  },
+  "6": {
+   "title": "Laurdag",
+   "tasks": []
+  },
+  "7": {
+   "title": "Sundag",
+   "tasks": []
   }
- }
+ },
+ "melding": "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til ein kommentar eller eit bilete.\nAlle oppgåvene MÅ kryssast av kvar dag."
 }
