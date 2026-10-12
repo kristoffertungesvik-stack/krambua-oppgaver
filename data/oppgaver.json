@@ -7,37 +7,43 @@
     "id": "tining",
     "t": "Sjekk tining før du går heim",
     "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter.",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "rein",
     "t": "Butikken er rein og fin",
     "s": "Ekstremt viktig heile dagen. Men butikken må vaskast grundig kvar kveld",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "boss",
     "t": "Tøm det store bosset ute",
     "s": "Både ved kaien og det som står oppe.",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "tmupnk6xa",
     "t": "Skru av alle apparat",
     "s": "Alle plater, grillar og omnar må skruast av før ein går heim",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "tmv0lq14f",
     "t": "Vask golvet inne på jernvarerommet",
     "s": "Dette MÅ gjerast kvar dag.",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "tmv0k9u2n",
     "t": "VIKTIG! Sjekk uteområde (under tak) før du går heim",
     "s": "Vask borda, kost gulvet, skru av lampar.",
-    "viktig": true
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
     "id": "tmupnirxo",
@@ -72,43 +78,52 @@
    "tasks": [
     {
      "id": "vifte-vask",
-     "t": "Ta ned vifta og vask ho grundig med Zalo"
+     "t": "Ta ned vifta og vask ho grundig med Zalo",
+     "vakt": "dag"
     },
     {
      "id": "vifte-inni",
      "t": "Vask oppi vifta",
-     "s": "Tørk ut feitt med papir."
+     "s": "Tørk ut feitt med papir.",
+     "vakt": "dag"
     },
     {
      "id": "vegg-spray",
      "t": "Vask veggen bak steikeplater og vask",
-     "s": "Bruk feittløysande spray."
+     "s": "Bruk feittløysande spray.",
+     "vakt": "dag"
     },
     {
      "id": "vegg-stal",
      "t": "Stålglans på veggane",
-     "s": "Berre veggane."
+     "s": "Berre veggane.",
+     "vakt": "dag"
     },
     {
      "id": "salat-golv",
      "t": "Dra fram salatbaren og vask bak",
-     "s": "Golv, vegg og hjørnet under benken."
+     "s": "Golv, vegg og hjørnet under benken.",
+     "vakt": "dag"
     },
     {
      "id": "salat-inni",
-     "t": "Vask oppi salatbaren og alle behaldarane"
+     "t": "Vask oppi salatbaren og alle behaldarane",
+     "vakt": "dag"
     },
     {
      "id": "polse",
-     "t": "Vask under pølsegrillen og pølseplata"
+     "t": "Vask under pølsegrillen og pølseplata",
+     "vakt": "dag"
     },
     {
      "id": "highspeed",
-     "t": "Vask bak High Speed-omnen"
+     "t": "Vask bak High Speed-omnen",
+     "vakt": "dag"
     },
     {
      "id": "manglar",
-     "t": "Skriv ned varer som manglar"
+     "t": "Skriv ned varer som manglar",
+     "vakt": "dag"
     }
    ]
   },
@@ -117,7 +132,8 @@
    "tasks": [
     {
      "id": "softis",
-     "t": "Vask softismaskinen"
+     "t": "Vask softismaskinen",
+     "vakt": "dag"
     }
    ]
   },
@@ -127,41 +143,49 @@
    "tasks": [
     {
      "id": "asko-klar",
-     "t": "Gjer alt klart til leveringa"
+     "t": "Gjer alt klart til leveringa",
+     "vakt": "dag"
     },
     {
      "id": "asko-frys",
      "t": "Frysevarer inn først",
-     "s": "Spesielt is – den smeltar raskt."
+     "s": "Spesielt is – den smeltar raskt.",
+     "vakt": "dag"
     },
     {
      "id": "asko-brod",
      "t": "Brødvarer inn kjapt",
-     "s": "Dei tiner raskt."
+     "s": "Dei tiner raskt.",
+     "vakt": "dag"
     },
     {
      "id": "asko-rest",
-     "t": "Resten av varene inn"
+     "t": "Resten av varene inn",
+     "vakt": "dag"
     },
     {
      "id": "asko-dato",
      "t": "Nye varer bakerst, gamle fremst",
-     "s": "Så me sel etter rett dato."
+     "s": "Så me sel etter rett dato.",
+     "vakt": "dag"
     },
     {
      "id": "tmupnn05e",
      "t": "Feil og eller avvik",
-     "s": "Om noko er levert feil eller noko manglar må dette meldast snarast."
+     "s": "Om noko er levert feil eller noko manglar må dette meldast snarast.",
+     "vakt": "dag"
     },
     {
      "id": "tmuv0q9yi",
      "t": "Vask over glassoverflater",
-     "s": "Isdisk, dører, vindauge og kjøleskap mm."
+     "s": "Isdisk, dører, vindauge og kjøleskap mm.",
+     "vakt": "kveld"
     },
     {
      "id": "tmuv0qrt4",
      "t": "Vask overflater som er tydelig fettete",
-     "s": "Oppå tørkerull, inni skap, rundt plater osv"
+     "s": "Oppå tørkerull, inni skap, rundt plater osv",
+     "vakt": "kveld"
     }
    ]
   },
@@ -171,12 +195,14 @@
     {
      "id": "tmupnh942",
      "t": "Bytt olje på frityren",
-     "s": "Vask behaldaren og varmeaparatet. Dertsom olja ikkje er veldig skitten og mørk kan ein bruke olja på nytt, om ikjje må den byttast ut"
+     "s": "Vask behaldaren og varmeaparatet. Dertsom olja ikkje er veldig skitten og mørk kan ein bruke olja på nytt, om ikjje må den byttast ut",
+     "vakt": "dag"
     },
     {
      "id": "tmupnntv4",
      "t": "Vask over glassoverflater",
-     "s": "Isdisk, dører, vindauge og kjøleskap mm."
+     "s": "Isdisk, dører, vindauge og kjøleskap mm.",
+     "vakt": "dag"
     }
    ]
   },
@@ -185,28 +211,34 @@
    "tasks": [
     {
      "id": "brus",
-     "t": "Fyll brusskapet heilt opp"
+     "t": "Fyll brusskapet heilt opp",
+     "vakt": "dag"
     },
     {
      "id": "kjol",
-     "t": "Vask alle overflater i kjøleskap og frysarar"
+     "t": "Vask alle overflater i kjøleskap og frysarar",
+     "vakt": "dag"
     },
     {
      "id": "bord",
-     "t": "Vask alle borda ute"
+     "t": "Vask alle borda ute",
+     "vakt": "dag"
     },
     {
      "id": "golv-ute",
-     "t": "Vask golvet ute under taket"
+     "t": "Vask golvet ute under taket",
+     "vakt": "dag"
     },
     {
      "id": "toalett",
-     "t": "Vask personaltoalettet"
+     "t": "Vask personaltoalettet",
+     "vakt": "dag"
     },
     {
      "id": "vaskerom",
      "t": "Vask vaskerommet",
-     "s": "På bakrommet"
+     "s": "På bakrommet",
+     "vakt": "dag"
     }
    ]
   },
