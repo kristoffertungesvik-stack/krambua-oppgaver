@@ -168,6 +168,14 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ed-bar .btn{padding:11px 18px;font-size:15px}
 .ed-bar .btn.ghost{background:rgba(255,255,255,.6)}
 .ed-bar #edMsg{padding-inline:8px;font-size:13px}
+.vseg{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px;border-radius:12px;background:rgba(118,118,128,.12);margin:-8px 0 0}
+.vseg button{font:inherit;font-size:15px;font-weight:600;border:none;border-radius:9px;padding:9px 8px;background:transparent;color:var(--ink);cursor:pointer;transition:background .25s,box-shadow .25s}
+.vseg button[aria-pressed="true"]{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
+.vseg button:focus-visible{outline:3px solid rgba(0,122,255,.45);outline-offset:2px}
+.dtag{display:inline-block;font-size:11px;font-weight:600;color:var(--accent);background:rgba(0,122,255,.10);padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:2px}
+.vchip{align-self:flex-start;font:inherit;font-size:12px;font-weight:600;border:none;border-radius:99px;padding:4px 10px;margin-top:4px;cursor:pointer;background:var(--fill);color:var(--ink2)}
+.vchip.v-dag{background:rgba(255,204,0,.24);color:#7a6000}
+.vchip.v-kveld{background:rgba(88,86,214,.15);color:#4643b0}
 .ed-msg{font:inherit;font-size:16px;padding:12px 16px;border:none;border-radius:16px;background:var(--cell);color:var(--ink);width:100%;box-sizing:border-box;outline:none;resize:vertical;min-height:70px}
 .ed-msg:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
 .tip{white-space:pre-wrap}
@@ -451,7 +459,7 @@ $("vEdit").onclick=()=>{ editorBuilt=false; draft=null; setView("edit"); };
 $("wkPrev").onclick=()=>{weekOffset--; setView("week");};
 $("wkNext").onclick=()=>{weekOffset++; setView("week");};
 
-function taskButton(task, date, isToday){
+function taskButton(task, date, isToday, tag){
   const d = (data[date]||{})[task.id];
   const editable = isToday && canWrite;
   const item = document.createElement("div"); item.className="item";
@@ -463,6 +471,7 @@ function taskButton(task, date, isToday){
   const txt = document.createElement("span"); txt.className="txt";
   const bt = document.createElement("b"); bt.textContent = task.t;
   if(task.viktig){ const v=document.createElement("span"); v.className="vtag"; v.textContent="Viktig"; bt.appendChild(v); }
+  if(tag){ const v=document.createElement("span"); v.className="dtag"; v.textContent=tag; bt.appendChild(v); }
   txt.appendChild(bt);
   if(task.s){ const sm=document.createElement("small"); sm.textContent=task.s; txt.appendChild(sm); }
   if(d){
@@ -492,11 +501,11 @@ function render(){
   $("ring").hidden = !isWeekday || view==="week";
   $("progBox").hidden = !isWeekday || view==="week";
   if(isWeekday && view!=="week"){
-    const all = tasksFor(t.dow).flatMap(s=>s.tasks);
+    const all = visibleItems(t.dow, true).map(x=>x.task);
     const n = all.filter(x=>(data[t.date]||{})[x.id]).length;
     $("progCount").textContent = `${n} av ${all.length} gjort`;
-    $("progBar").style.width = (n/all.length*100)+"%";
-    const C=2*Math.PI*18; $("ringVal").style.strokeDasharray=C; $("ringVal").style.strokeDashoffset=C*(1-n/all.length); $("ringTxt").textContent=n+"/"+all.length; $("ring").classList.toggle("full", n===all.length);
+    $("progBar").style.width = (n/(all.length||1)*100)+"%";
+    const C=2*Math.PI*18; $("ringVal").style.strokeDasharray=C; $("ringVal").style.strokeDashoffset=C*(1-n/(all.length||1)); $("ringTxt").textContent=n+"/"+all.length; $("ring").classList.toggle("full", n===all.length);
   }
   const note=$("note");
   if(!OWNER){ note.hidden=false; note.textContent="Sida må opnast frå GitHub Pages-adressa."; }
@@ -515,6 +524,24 @@ function render(){
     const m=document.createElement("span"); m.className="meta"; m.textContent=`${pretty(d.date)} · ${n}/${all.length}`;
     head.append(h,m); sec.appendChild(head);
     if(isToday && view!=="week"){ const txt=(MELDING===null ? DEFAULT_TIP : MELDING).trim(); if(txt){ const tip=document.createElement("p"); tip.className="tip"+(MELDING!==null && MELDING!==DEFAULT_TIP ? " beskjed" : ""); tip.textContent=txt; sec.appendChild(tip); } }
+    const todayView = isToday && view!=="week";
+    if(hasShifts(d.dow)){
+      if(todayView){
+        const cv=currentVakt(); const sw=document.createElement("div"); sw.className="vseg"; sw.setAttribute("role","group"); sw.setAttribute("aria-label","Vel vakt");
+        [["dag","Dagvakt"],["kveld","Kveldsvakt"]].forEach(([k,l])=>{ const bb=document.createElement("button"); bb.type="button"; bb.textContent=l; bb.setAttribute("aria-pressed",String(cv===k)); bb.onclick=()=>setVakt(k); sw.appendChild(bb); });
+        sec.appendChild(sw);
+      }
+      const items = visibleItems(d.dow, todayView);
+      for(const vk of ["alltid","dag","kveld"]){
+        const its = items.filter(x=>vaktOf(x.task)===vk);
+        if(!its.length) continue;
+        const g=document.createElement("div"); g.className="group";
+        const h3=document.createElement("h3"); h3.textContent=vaktLabel(vk); g.appendChild(h3);
+        [...new Set(its.filter(x=>x.grp!==DAILY && x.grp.intro).map(x=>x.grp.intro))].forEach(tx=>{ const pp=document.createElement("p"); pp.className="intro"; pp.textContent=tx; g.appendChild(pp); });
+        for(const x of its) g.appendChild(taskButton(x.task, d.date, isToday));
+        sec.appendChild(g);
+      }
+    } else {
     for(const grp of tasksFor(d.dow)){
       const g=document.createElement("div"); g.className="group";
       const h3=document.createElement("h3");
@@ -524,9 +551,33 @@ function render(){
       for(const task of grp.tasks) g.appendChild(taskButton(task, d.date, isToday));
       sec.appendChild(g);
     }
+    }
     list.appendChild(sec);
   }
 }
+
+// ---- Vakter ----
+function vaktOf(task){ return task.vakt==="dag"||task.vakt==="kveld" ? task.vakt : "alltid"; }
+function vaktLabel(k){ return {alltid:"Alltid", dag:"Dagvakt", kveld:"Kveldsvakt"}[k]; }
+function autoVakt(){
+  const [hh,mm]=new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date()).split(":").map(Number);
+  return (hh%24)*60+mm < 15*60+30 ? "dag" : "kveld";   // byter til kveldsvakt kl. 15:30
+}
+function currentVakt(){
+  const t=today(), auto=autoVakt(); let saved=null; try{ saved=JSON.parse(load("krambua-vakt")||"null"); }catch(e){}
+  // eit manuelt val gjeld berre til neste vaktskifte
+  if(saved && saved.date===t.date && saved.auto===auto && (saved.v==="dag"||saved.v==="kveld")) return saved.v;
+  return auto;
+}
+function setVakt(v){ store("krambua-vakt", JSON.stringify({date:today().date, auto:autoVakt(), v})); render(); }
+function itemsFor(dow){ return tasksFor(dow).flatMap(grp=>grp.tasks.map(task=>({task, grp}))); }
+function hasShifts(dow){ return itemsFor(dow).some(x=>vaktOf(x.task)!=="alltid"); }
+function visibleItems(dow, todayView){
+  const items=itemsFor(dow);
+  if(!todayView || !hasShifts(dow)) return items;
+  const v=currentVakt(); return items.filter(x=>{ const k=vaktOf(x.task); return k==="alltid"||k===v; });
+}
+function dayGroupName(grp){ return grp.title && grp.title.includes("–") ? grp.title.replace(/^[^–]*–\s*/,"") : (grp.title||""); }
 
 function markDone(date,id,extra){
   const namn=nameInput.value.trim();
@@ -579,7 +630,7 @@ function renderEditor(){
   $("progBox").hidden = true; $("note").hidden = true;
   const list=$("list"); list.innerHTML="";
   const intro=document.createElement("p"); intro.className="sub"; intro.style.margin="0";
-  intro.textContent="Endre tekst, flytt med pilene, slett med ✕ eller legg til nye. Trykk Lagre når du er ferdig. Endringane kjem ut til alle innan eitt minutt.";
+  intro.textContent="Endre tekst, flytt med pilene, slett med ✕ eller legg til nye. Trykk på merkelappen under ei oppgåve for å velje Alltid, Dagvakt eller Kveldsvakt. Trykk Lagre når du er ferdig. Endringane kjem ut til alle innan eitt minutt.";
   list.appendChild(intro);
   if(draft.melding===undefined) draft.melding = (MELDING===null ? DEFAULT_TIP : MELDING);
   const mbox=document.createElement("section"); mbox.className="ed-day";
@@ -598,7 +649,9 @@ function renderEditor(){
       a.oninput=()=>{ task.t=a.value; dirty=true; };
       const b=document.createElement("input"); b.type="text"; b.className="sub"; b.value=task.s||""; b.placeholder="Forklaring (valfritt)"; b.id=`ed-${k}-${i}-s`;
       b.oninput=()=>{ task.s=b.value; dirty=true; };
-      f.append(a,b);
+      const vc=document.createElement("button"); vc.type="button"; vc.className="vchip v-"+vaktOf(task); vc.textContent=vaktLabel(vaktOf(task)); vc.title="Trykk for å byte mellom Alltid, Dagvakt og Kveldsvakt";
+      vc.onclick=()=>{ const nx={alltid:"dag",dag:"kveld",kveld:"alltid"}[vaktOf(task)]; if(nx==="alltid") delete task.vakt; else task.vakt=nx; dirty=true; vc.className="vchip v-"+vaktOf(task); vc.textContent=vaktLabel(vaktOf(task)); };
+      f.append(a,b,vc);
       const acts=document.createElement("div"); acts.className="acts";
       const mk=(txt,lbl,fn)=>{ const x=document.createElement("button"); x.type="button"; x.textContent=txt; x.setAttribute("aria-label",lbl); x.onclick=()=>{ fn(); dirty=true; renderEditor(); }; return x; };
       if(task.viktig) row.classList.add("viktig");
@@ -626,7 +679,7 @@ function renderEditor(){
   bar.append(save,cancel,keyBtn,msg); list.appendChild(bar);
 }
 async function saveTasks(btn,msg){
-  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {})})).filter(x=>x.t);
+  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {}), ...(x.vakt==="dag"||x.vakt==="kveld" ? {vakt:x.vakt} : {})})).filter(x=>x.t);
   const newDaily = Object.assign({}, DAILY, {tasks: clean(draft[0])});
   const newWeek = clone(WEEK);
   for(let d=1; d<=7; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
@@ -766,6 +819,8 @@ let lastDate = today().date;
 setInterval(()=>{
   const t=today();
   if(t.date!==lastDate){ lastDate=t.date; buildWeek(); render(); }
+  else if(view==="today" && autoVakt()!==window.__av){ render(); }
+  window.__av = autoVakt();
   if(!document.hidden && !busy) refresh();
 }, 20000);
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refresh(); });
