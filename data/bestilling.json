@@ -5,7 +5,11 @@
    "tekst": "Relekta 101 Wipes",
    "namn": "Kristoffer",
    "tid": 1791891665335,
-   "ean": "7090002669025"
+   "ean": "7090002669025",
+   "bestilt": {
+    "namn": "Kristoffer",
+    "tid": 1791891669977
+   }
   }
  ]
 }
