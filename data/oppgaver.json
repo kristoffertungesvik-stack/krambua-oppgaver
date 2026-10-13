@@ -24,7 +24,6 @@
     "id": "tkmv6mi6sx3",
     "t": "Steik pølser og sjekk tining",
     "s": "Sjekk om pølser eller bacon må tinast. Tin alltid i kjøleskapet, og skriv dato på pakken.",
-    "viktig": true,
     "vakt": "dag"
    },
    {
@@ -327,5 +326,5 @@
    "tasks": []
   }
  },
- "melding": "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til ein kommentar eller eit bilete.\nAlle oppgåvene MÅ kryssast av kvar dag.\n\nHugs:\n• Berre dei som jobbar her skal bak disken og på bakrommet.\n• Hald ro i butikken og kafeavdelinga. Det er ikkje lov å ta med mat frå Spar eller andre butikkar.\n• Legemiddel blir berre selt til personar over 18 år, og aldri 2 pakkar av same sort samtidig. Les den kvite permen «Salg av legemiddel»."
+ "melding": "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til ein kommentar eller eit bilete.\nAlle oppgåvene MÅ kryssast av kvar dag.\n\nHugs:\n• Berre dei som jobbar her skal bak disken og på bakrommet.\n• Hald ro i butikken og kafeavdelinga. Det er ikkje lov å ta med mat frå Spar eller andre butikkar.\n• Legemiddel blir berre selt til personar over 18 år, og aldri 2 pakkar av same sort samtidig. Les den grå permen «ik tobakk, legemiddel og energidrikk».\n• Alle varer som skal tinast må merkast med tindedato, bruk eigne etikettar"
 }
