@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f2f2f7">
+<meta name="apple-mobile-web-app-title" content="Krambua">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <title>Krambua dagsoppgåver</title>
@@ -382,7 +388,7 @@ const OWNER = location.hostname.endsWith("github.io") ? location.hostname.split(
 const REPO  = location.hostname.endsWith("github.io") ? (location.pathname.split("/")[1] || "") : "";
 const API   = `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/`;
 
-// Nøkkelen kjem i lenka (#k=...), blir lagra på telefonen og fjerna frå adresselinja
+// Nøkkelen kjem i lenka (#k=...) og blir lagra på telefonen
 function store(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} }
 function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 (function readHash(){
@@ -390,7 +396,10 @@ function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; }
   if(h.get("k")) store("krambua-nokkel", h.get("k"));
   if(h.has("sjef")) store("krambua-sjef", "1");      // admin-lenke: .../#sjef
   if(h.has("tilsett")) store("krambua-sjef", null);  // tilbake til vanleg visning
-  if(location.hash) history.replaceState(null, "", location.pathname + location.search);
+  // Nøkkelen blir ståande i adressa, så han følgjer med når sida blir lagra på heimskjermen (iPhone har eiga lagring for heimskjerm-appar)
+  const k = load("krambua-nokkel"), sj = load("krambua-sjef") === "1";
+  const want = k ? "#k=" + k + (sj ? "&sjef" : "") : "";
+  if(location.hash !== want) history.replaceState(null, "", location.pathname + location.search + want);
 })();
 let TOKEN = load("krambua-nokkel");
 let isOwner = load("krambua-sjef") === "1";
