@@ -201,6 +201,7 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ik-row:active{background:var(--fill)}
 .ik-row .lt{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;background:#d7141e}
 .ik-row .lt.sal{background:#5856d6}
+.ik-row .lt.kasse{background:#248a3d}
 .ik-row .lt.q{background:rgba(0,122,255,.12);color:var(--accent)}
 .ik-row .tx{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
 .ik-row .tx b{font-weight:600;font-size:16px}
@@ -734,7 +735,15 @@ const IK_SYN=[
  "kjøpe kjøp handle",
  "dato datomerking",
  "lauk løk",
- "steike steik steikje steike steiketid"
+ "steike steik steikje steike steiketid",
+ "kasse kassa kasseapparat",
+ "dagsoppgjer dagsoppgjør kveldsoppgjer kveldsoppgjør oppgjer oppgjør zrapport z-rapport rapport",
+ "gåvekort gavekort gåvekortet gavekortet",
+ "kreditt kredittordre konto kreditordre",
+ "faktura fakturere fakturerast",
+ "bedrift firma bedriftskunde",
+ "differanse diff",
+ "pengar penger kontantar kontanter cash"
 ].map(g=>g.split(" "));
 const IK_ALG=["gluten","skaldyr","egg","fisk","peanøtter","soya","mjølk","nøtter","selleri","sennep","sesam","sulfitt","lupin","blautdyr"];
 function ikStem(w){
@@ -867,13 +876,13 @@ function ikResults(forced){
   const q=ikQuery.trim();
   if(!q){
     const [g1,l1]=ikGroup("Vanlege spørsmål");
-    const pick=["Kor gammal må ein vere for å kjøpe energidrikk?","Kor mange pakkar paracet eller ibux kan ein kunde kjøpe?","Kor kaldt skal kjøleskapet vere?","Korleis skal pølser og bacon tinast?","Kva godtek me som legitimasjon?","Kva gjer eg viss noko er gale, t.d. feil temperatur eller eit utstyr som ikkje verkar?","Kva allergen er det i ein hamburgar?","Kunden spør kva tablett han bør ta – kva seier eg?"];
+    const pick=["Korleis tek eg dagsoppgjeret?","Kor gammal må ein vere for å kjøpe energidrikk?","Kor mange pakkar paracet eller ibux kan ein kunde kjøpe?","Kor kaldt skal kjøleskapet vere?","Korleis skal pølser og bacon tinast?","Kva godtek me som legitimasjon?","Kva gjer eg viss noko er gale, t.d. feil temperatur eller eit utstyr som ikkje verkar?","Kva allergen er det i ein hamburgar?","Kunden spør kva tablett han bør ta – kva seier eg?"];
     pick.map(x=>IK.faq.find(f=>f.q===x)).filter(Boolean).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f))));
     const more=document.createElement("button"); more.type="button"; more.className="ik-row"; more.innerHTML=`<span class="lt q">${IK.faq.length}</span><span class="tx"><b style="color:var(--accent)">Sjå alle spørsmåla</b></span>${CHEV}`;
     more.onclick=()=>{ more.remove(); IK.faq.filter(f=>!pick.includes(f.q)).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f)))); };
     l1.appendChild(more); out.appendChild(g1);
     IK.permar.forEach(p=>{ const [g,l]=ikGroup(p.namn+" – "+p.tittel.toLowerCase());
-      p.bolkar.forEach(s=>l.appendChild(ikRowEl(s.b, p.id==="sal"?"sal":"", s.tittel, s.intro, ()=>openSec(s.id)))); out.appendChild(g); });
+      p.bolkar.forEach(s=>l.appendChild(ikRowEl(s.b, p.id==="mat"?"":p.id, s.tittel, s.intro, ()=>openSec(s.id)))); out.appendChild(g); });
     const n=document.createElement("p"); n.className="status"; n.textContent="Henta frå IK-mat-permen og internkontrollpermen for sal. Ved tvil: spør Kristoffer."; out.appendChild(n);
     return;
   }
@@ -887,7 +896,7 @@ function ikResults(forced){
     const [g,l]=ikGroup(top||alg ? "Andre treff" : "Treff");
     rest.forEach(r=>{ const d=r.d;
       if(d.kind==="faq") l.appendChild(ikRowEl("?","q",d.f.q,"",()=>faqOpen(d.f),ikMark(d.f.a.length>140?d.f.a.slice(0,137)+"…":d.f.a,qt)));
-      else l.appendChild(ikRowEl(d.sec.b, d.perm.id==="sal"?"sal":"", d.head ? `${d.head}` : d.sec.tittel, "", ()=>openSec(d.sec.id, d.head), `<span style="color:var(--ink2)">${esc(d.perm.namn)} · ${esc(d.sec.tittel)}</span><br>${ikMark(ikSnippet(d.body,qt),qt)}`));
+      else l.appendChild(ikRowEl(d.sec.b, d.perm.id==="mat"?"":d.perm.id, d.head ? `${d.head}` : d.sec.tittel, "", ()=>openSec(d.sec.id, d.head), `<span style="color:var(--ink2)">${esc(d.perm.namn)} · ${esc(d.sec.tittel)}</span><br>${ikMark(ikSnippet(d.body,qt),qt)}`));
     });
     out.appendChild(g);
   }
