@@ -187,6 +187,58 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .seg::before{width:calc((100% - 8px)/var(--n,3))!important;transform:translateX(calc(var(--i,0)*100%))!important}
 .seg button{position:relative}
 .badge{position:absolute;top:1px;left:calc(50% + 5px);min-width:17px;height:17px;padding:0 5px;box-sizing:border-box;border-radius:99px;background:#ff3b30;color:#fff;font-size:11px;font-weight:700;line-height:17px;text-align:center;letter-spacing:0}
+/* ---------- internkontroll ---------- */
+.seg button span{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.ik-search{position:relative}
+.ik-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink2);pointer-events:none}
+.ik-search input{font:inherit;font-size:17px;width:100%;box-sizing:border-box;padding:13px 40px 13px 42px;border:none;border-radius:14px;background:var(--cell);color:var(--ink);outline:none;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.ik-search input:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
+.ik-search input::-webkit-search-cancel-button{display:none}
+.ik-search .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:none;border-radius:50%;background:var(--fill2);color:var(--ink2);font:inherit;font-size:14px;cursor:pointer}
+.ik-list{background:var(--cell);border-radius:16px;overflow:hidden}
+.ik-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--ink);background:none;border:none;padding:13px 14px 13px 16px;cursor:pointer;position:relative}
+.ik-row + .ik-row::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep,rgba(60,60,67,.18))}
+.ik-row:active{background:var(--fill)}
+.ik-row .lt{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;background:#d7141e}
+.ik-row .lt.sal{background:#5856d6}
+.ik-row .lt.q{background:rgba(0,122,255,.12);color:var(--accent)}
+.ik-row .tx{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.ik-row .tx b{font-weight:600;font-size:16px}
+.ik-row .tx small{color:var(--ink2);font-size:14px;line-height:1.35}
+.ik-row .tx small mark,.ik-ans mark,.ik-body mark{background:rgba(255,204,0,.35);color:inherit;border-radius:3px;padding:0 1px}
+.ik-row .chev{flex:none;color:var(--ink3)}
+.ik-ans{background:var(--cell);border-radius:18px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 0 0 1.5px rgba(0,122,255,.35)}
+.ik-ans .k{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.ik-ans .q{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.ik-ans .a{margin:0;font-size:16px;line-height:1.45}
+.ik-link{align-self:flex-start;font:inherit;font-size:14px;font-weight:600;color:var(--accent);background:rgba(0,122,255,.10);border:none;border-radius:99px;padding:7px 12px;cursor:pointer}
+.ik-empty{margin:0;padding:20px 16px;text-align:center;color:var(--ink2);background:var(--cell);border-radius:16px;font-size:15px}
+.ik-back{align-self:flex-start;font:inherit;font-size:16px;font-weight:600;color:var(--accent);background:none;border:none;padding:4px 0;cursor:pointer}
+.ik-body{background:var(--cell);border-radius:18px;padding:18px 16px;display:flex;flex-direction:column;gap:12px;font-size:16px;line-height:1.5}
+.ik-body h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.ik-body .perm{margin:0;font-size:13px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.ik-body h3{margin:10px 0 0;font-size:17px;font-weight:700;scroll-margin-top:90px}
+.ik-body p{margin:0}
+.ik-body ul,.ik-body ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.ik-body ul.ck{list-style:none;padding-left:0}
+.ik-body ul.ck li{display:flex;gap:10px}
+.ik-body ul.ck li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border:1.8px solid var(--ink3);border-radius:5px}
+.ik-body dl{margin:0;display:flex;flex-direction:column;gap:10px}
+.ik-body dt{font-weight:700;font-size:14px;color:var(--ink2)}
+.ik-body dd{margin:2px 0 0}
+.ik-body .nt{background:rgba(255,149,0,.12);border-radius:12px;padding:10px 12px;font-size:15px;color:#7a4300}
+.ik-body .hit-h{animation:ikflash 1.6s ease}
+@keyframes ikflash{0%,40%{background:rgba(255,204,0,.35)}100%{background:transparent}}
+.algwrap{overflow-x:auto;margin:0 -16px;padding:0 16px}
+.alg{border-collapse:separate;border-spacing:0;font-size:13px;min-width:640px}
+.alg th,.alg td{padding:7px 6px;text-align:center;border-bottom:1px solid rgba(60,60,67,.14)}
+.alg th{font-size:11px;font-weight:700;color:var(--ink2);writing-mode:vertical-rl;transform:rotate(180deg);height:78px;vertical-align:bottom;padding:6px 4px}
+.alg th:first-child,.alg td:first-child{position:sticky;left:0;background:var(--cell);text-align:left;writing-mode:horizontal-tb;transform:none;min-width:140px;font-weight:600;z-index:1}
+.alg td.y{color:#d7141e;font-weight:800;font-size:15px}
+.alg td.s{color:#c45f00;font-weight:800}
+.alg tr.on td{background:rgba(255,204,0,.18)}
+.alg tr.on td:first-child{background:#fff6cf}
+.alglist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:15px}
 /* ---------- bestilling ---------- */
 .oform{display:grid;grid-template-columns:1fr auto;gap:8px;background:var(--cell);border-radius:16px;padding:12px}
 .scanbtn{display:flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:600;border:none;border-radius:12px;padding:0 14px;background:rgba(0,122,255,.10);color:var(--accent);cursor:pointer}
@@ -323,6 +375,7 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
       <button type="button" id="vToday" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16.2 9.3"/></svg><span>I dag</span></button>
       <button type="button" id="vWeek" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Oversikt</span></button>
       <button type="button" id="vOrder" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.2l2.2 10.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.2L20.5 8H6.1"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span>Bestill</span><b class="badge" id="oBadge" hidden></b></button>
+      <button type="button" id="vIK" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l7 2.6v5.5c0 4.4-2.9 8.1-7 9.5-4.1-1.4-7-5.1-7-9.5V5.8l7-2.6z"/><path d="M9 12l2.2 2.2L15.2 10"/></svg><span>Internkontroll</span></button>
       <button type="button" id="vEdit" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg><span>Rediger</span></button>
     </div>
     <div class="wk" id="wkNav" hidden>
@@ -498,6 +551,7 @@ function setView(v){
 $("vToday").onclick=()=>setView("today");
 $("vWeek").onclick=()=>setView("week");
 $("vOrder").onclick=()=>setView("bestill");
+$("vIK").onclick=()=>{ ikSec=null; setView("ik"); };
 $("vEdit").onclick=()=>{ editorBuilt=false; draft=null; setView("edit"); };
 $("wkPrev").onclick=()=>{weekOffset--; setView("week");};
 $("wkNext").onclick=()=>{weekOffset++; setView("week");};
@@ -534,7 +588,7 @@ function taskButton(task, date, isToday, tag){
 
 function updateTabs(){
   const seg=document.querySelector(".seg"); if(!seg) return;
-  const ids={today:"vToday",week:"vWeek",bestill:"vOrder",edit:"vEdit"};
+  const ids={today:"vToday",week:"vWeek",bestill:"vOrder",ik:"vIK",edit:"vEdit"};
   const btns=[...seg.querySelectorAll("button")].filter(b=>!b.hidden);
   btns.forEach(b=>b.setAttribute("aria-pressed", String(b.id===ids[view])));
   seg.style.setProperty("--n", btns.length);
@@ -544,6 +598,7 @@ function render(){
   updateTabs();
   if(view==="edit"){ if(!editorBuilt) renderEditor(); return; }
   if(view==="bestill"){ editorBuilt=false; renderOrders(); return; }
+  if(view==="ik"){ editorBuilt=false; renderIK(); return; }
   editorBuilt=false;
   const t = today();
   const isWeekday = true;
@@ -630,6 +685,236 @@ function visibleItems(dow, todayView){
   const v=currentVakt(); return items.filter(x=>{ const k=vaktOf(x.task); return k==="alltid"||k===v; });
 }
 function dayGroupName(grp){ return grp.title && grp.title.includes("–") ? grp.title.replace(/^[^–]*–\s*/,"") : (grp.title||""); }
+
+
+// ---- Internkontroll: ik.json (permar, vanlege spørsmål og søk) ----
+let IK=null, ikSec=null, ikHead=null, ikQuery="", ikIndex=null, ikLoading=false;
+async function loadIK(){
+  if(IK || ikLoading) return; ikLoading=true;
+  try{ const r=await fetch("ik.json?t="+Math.floor(Date.now()/600000),{cache:"no-cache"}); if(r.ok){ IK=await r.json(); store("krambua-ik",JSON.stringify(IK)); } }catch(e){}
+  if(!IK){ try{ IK=JSON.parse(load("krambua-ik")||"null"); }catch(e){} }
+  ikLoading=false; ikIndex=null;
+  if(view==="ik"){ const r=$("ikRoot"); if(r) r.remove(); renderIK(); }
+}
+const IK_STOP=new Set(("kva kor korleis kven kvifor kvar når kan eg me vi du de dei ein ei eit det den dette er var vere vera blir bli vert på i til av og å skal må med for om som har ikkje ikke seg sjølv frå fra få lov gjer gjere gjera hva hvor hvordan hvem hvilken hvilke jeg en et at så da då ho han hen oss meg deg sin si sitt sine kunden kunde viss dersom eller men noko noe nokon noen litt mykje mye ja nei ok bør burde treng trenger lyst gong gang gonger ganger").split(" "));
+const IK_SYN=[
+ "tobakk snus røyk røyke sigarett sigarettar sigg e-sigarett vape tobakksvare snusboks",
+ "legemiddel legemidl medisin medisinar medisiner paracet ibux smertestillande smertestillende tablett tablettar tabletter pille piller ibuprofen paracetamol reseptfri",
+ "energidrikk energidrikke monster redbull bull burn koffein nocco",
+ "alder aldersgrense gammal gammel år ung ungdom mindreårig barn",
+ "legitimasjon leg id bankkort pass førarkort førerkort",
+ "kjøleskap kjøl kjøleskapet kjøledisk kjøle",
+ "fryseskap frys fryser frysar frysen fryseboks",
+ "temperatur temp grader kaldt kald celsius",
+ "tin tine tining tint tinast tines opptining tinar",
+ "allergen allergi allergiar allergier allergisk inneheld inneholder",
+ "gluten glutenfri cøliaki",
+ "mjølk melk laktose",
+ "avvik feil gale galt problem øydelagd ødelagt uhell",
+ "vask vaske vaskast vasking reinhald reingjer rengjøre rengjøring reingjering",
+ "hanske hanskar hansker",
+ "sjuk sjukdom syk sykdom omgangssjuke oppkast diaré magesjuke",
+ "hamburgar hamburger burgar burger",
+ "kebab kebabrull kebabtallerken",
+ "pølse pølser grillpølse",
+ "frityr frityrolje",
+ "softis softismaskin",
+ "slush skurp",
+ "kaffi kaffe kaffimaskin",
+ "golv gulv",
+ "steikeplate stekeplate steikeplata",
+ "omn ovn omnen ovnen",
+ "boss søppel avfall container bosspose",
+ "mattilsynet tilsyn inspeksjon",
+ "mikro mikroen mikrobølgjeomn mikrobølgeovn",
+ "ansvarleg ansvarlig sjef leiar leder",
+ "melde meld melder rapportere varsle",
+ "opplæring kurs signere signatur",
+ "selje selge sal salg",
+ "kjøpe kjøp handle",
+ "dato datomerking",
+ "lauk løk",
+ "steike steik steikje steike steiketid"
+].map(g=>g.split(" "));
+const IK_ALG=["gluten","skaldyr","egg","fisk","peanøtter","soya","mjølk","nøtter","selleri","sennep","sesam","sulfitt","lupin","blautdyr"];
+function ikStem(w){
+  if(/^\d+$/.test(w)) return w;
+  for(const s of ["ane","ene","ar","er","en","et","ne","a","e","t"]) if(w.endsWith(s) && w.length-s.length>=4) return w.slice(0,-s.length);
+  return w;
+}
+let IK_MAP=null;
+function ikCanon(w){
+  if(!IK_MAP){ IK_MAP=new Map(); IK_SYN.forEach(g=>{ const c=ikStem(g[0]); g.forEach(x=>{ IK_MAP.set(x,c); IK_MAP.set(ikStem(x),c); }); });
+    [["skalldyr","skaldyr"],["bløtdyr","blautdyr"],["peanøtt","peanøtter"],["nøtt","nøtter"]].forEach(([a,b])=>{ IK_MAP.set(a,ikStem(b)); IK_MAP.set(ikStem(a),ikStem(b)); }); }
+  return IK_MAP.get(w) || IK_MAP.get(ikStem(w)) || ikStem(w);
+}
+function ikWords(t){ return String(t||"").toLowerCase().replace(/[‐-―-]/g," ").match(/[a-zæøåéü0-9]+/g)||[]; }
+function ikDocToks(t){ return ikWords(t).filter(w=>!IK_STOP.has(w)).map(ikCanon); }
+function ikToks(t,keepStop){ return ikWords(t).filter(w=>keepStop||!IK_STOP.has(w)).map(w=>/^\d+$/.test(w) && +w>=10 && +w<=25 ? "alder" : ikCanon(w)); }
+function blockText(b){
+  if(b.t==="p"||b.t==="h"||b.t==="note") return b.x;
+  if(b.t==="kv") return b.r.map(r=>r[0]+": "+r[1]).join(". ");
+  if(b.t==="ul"||b.t==="ol"||b.t==="check") return b.l.join(". ");
+  if(b.t==="allergen") return "allergen "+IK.allergen.rader.map(r=>r.n).join(", ");
+  return "";
+}
+function ikBuildIndex(){
+  const docs=[];
+  IK.faq.forEach((f,i)=>docs.push({kind:"faq",f, title:f.q, body:f.a, fields:[[ikDocToks(f.q),3.5],[ikDocToks(f.ord),3],[ikDocToks(f.a),1]]}));
+  IK.permar.forEach(p=>p.bolkar.forEach(sec=>{
+    let cur={head:null, blocks:[]}; const chunks=[cur];
+    sec.innhald.forEach(b=>{ if(b.t==="h"){ cur={head:b.x, blocks:[]}; chunks.push(cur); } else cur.blocks.push(b); });
+    chunks.forEach(c=>{ if(!c.head && !c.blocks.length) return;
+      const body=c.blocks.map(blockText).join(". ");
+      docs.push({kind:"sec", perm:p, sec, head:c.head, title:(c.head||sec.tittel), body,
+        fields:[[ikDocToks(c.head||""),3],[ikDocToks(sec.tittel),2.5],[ikDocToks(sec.intro),1.5],[ikDocToks(body),1]]}); });
+  }));
+  docs.forEach(d=>{ d.sets=d.fields.map(([ts,w])=>[new Set(ts),w]); });
+  ikIndex=docs;
+}
+function ikSearch(q){
+  const qt=[...new Set(ikToks(q))]; if(!qt.length) return {qt, res:[]};
+  if(!ikIndex) ikBuildIndex();
+  const res=[];
+  ikIndex.forEach(d=>{
+    let sc=0, hit=0;
+    qt.forEach(t=>{
+      let best=0;
+      d.sets.forEach(([set,w])=>{
+        if(set.has(t)) best=Math.max(best,w);
+        else if(t.length>=4){ for(const x of set){ if(x.length>=4 && (x.startsWith(t)||t.startsWith(x))){ best=Math.max(best,w*.5); break; } } }
+      });
+      if(best>0){ sc+=best; hit++; }
+    });
+    if(!hit) return;
+    sc*= (0.4+hit/qt.length) * (d.kind==="faq"?1.25:1);
+    res.push({d,sc,hit});
+  });
+  res.sort((a,b)=>b.sc-a.sc);
+  return {qt,res};
+}
+function esc(t){ return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function ikMark(text, qt){
+  const qs=new Set(qt);
+  return String(text).split(/([A-Za-zÆØÅæøåéü0-9]+)/).map(part=>{
+    if(!/[A-Za-zÆØÅæøåéü0-9]/.test(part)) return esc(part);
+    const c=ikCanon(part.toLowerCase());
+    return qs.has(c) && !IK_STOP.has(part.toLowerCase()) ? "<mark>"+esc(part)+"</mark>" : esc(part);
+  }).join("");
+}
+function ikSnippet(body, qt){
+  const parts=String(body).split(/(?<=[.!?])\s+/); const qs=new Set(qt);
+  let best=parts[0]||"", bs=-1;
+  parts.forEach(s=>{ const n=ikToks(s).filter(t=>qs.has(t)).length; if(n>bs){ bs=n; best=s; } });
+  return best.length>180 ? best.slice(0,177)+"…" : best;
+}
+const CHEV='<svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+function findSec(id){ for(const p of IK.permar) for(const s of p.bolkar) if(s.id===id) return {p,s}; return null; }
+function secLabel(id){ const f=findSec(id); return f ? `${f.p.namn} · ${f.s.b} ${f.s.tittel}` : ""; }
+function openSec(id, head){ ikSec=id; ikHead=head||null; const r=$("ikRoot"); if(r) r.remove(); renderIK(); window.scrollTo({top:0}); }
+function renderIK(){
+  $("dateline").textContent = "Permane, rett i appen"; $("bigTitle").textContent = "Internkontroll";
+  $("ring").hidden = true; $("progBox").hidden = true; $("note").hidden = true; $("shareBox").hidden = true;
+  if($("ikRoot")) return;
+  const list=$("list"); list.innerHTML="";
+  const root=document.createElement("div"); root.id="ikRoot"; root.style.cssText="display:flex;flex-direction:column;gap:22px";
+  list.appendChild(root);
+  if(!IK){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent= ikLoading||!navigator.onLine ? "Hentar internkontrollen …" : "Hentar internkontrollen …"; root.appendChild(e); loadIK(); return; }
+  if(ikSec){ renderIKSection(root); return; }
+  const sw=document.createElement("form"); sw.className="ik-search"; sw.setAttribute("role","search"); sw.onsubmit=e=>{ e.preventDefault(); const i=$("ikQ"); i && i.blur(); };
+  sw.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="ikQ" type="search" enterkeyhint="search" autocomplete="off" placeholder="Still eit spørsmål eller søk" aria-label="Søk i internkontrollen"><button type="button" class="clr" id="ikClr" aria-label="Tøm søket" hidden>✕</button>';
+  root.appendChild(sw);
+  const out=document.createElement("div"); out.id="ikOut"; out.style.cssText="display:flex;flex-direction:column;gap:22px"; root.appendChild(out);
+  const qi=$("ikQ"); qi.value=ikQuery;
+  qi.oninput=()=>{ ikQuery=qi.value; $("ikClr").hidden=!ikQuery; ikResults(); };
+  $("ikClr").onclick=()=>{ ikQuery=""; qi.value=""; $("ikClr").hidden=true; ikResults(); qi.focus(); };
+  $("ikClr").hidden=!ikQuery;
+  ikResults();
+}
+function ikGroup(title){ const g=document.createElement("div"); g.className="group"; if(title){ const h=document.createElement("h3"); h.textContent=title; g.appendChild(h); } const l=document.createElement("div"); l.className="ik-list"; g.appendChild(l); return [g,l]; }
+function ikRowEl(lt, ltCls, title, sub, onclick, subHtml){
+  const b=document.createElement("button"); b.type="button"; b.className="ik-row";
+  b.innerHTML=`<span class="lt ${ltCls}">${esc(lt)}</span><span class="tx"><b>${esc(title)}</b>${sub||subHtml?`<small>${subHtml||esc(sub)}</small>`:""}</span>${CHEV}`;
+  b.onclick=onclick; return b;
+}
+function faqOpen(f){ const out=$("ikOut"); ikQuery=f.q; const qi=$("ikQ"); if(qi){ qi.value=f.q; $("ikClr").hidden=false; } ikResults(f); window.scrollTo({top:0,behavior:"smooth"}); }
+function ikAnswerCard(f, qt, label){
+  const c=document.createElement("div"); c.className="ik-ans";
+  c.innerHTML=`<span class="k">${esc(label||"Svar")}</span><p class="q">${esc(f.q)}</p><p class="a">${qt?ikMark(f.a,qt):esc(f.a)}</p>`;
+  const l=document.createElement("button"); l.type="button"; l.className="ik-link"; l.textContent="Les meir: "+secLabel(f.ref)+" ›"; l.onclick=()=>openSec(f.ref);
+  c.appendChild(l); return c;
+}
+function ikAllergenHits(qt){
+  const qs=new Set(qt), A=IK.allergen; const out=[];
+  const algs=IK_ALG.filter(a=>qs.has(ikCanon(a)));
+  const rows=A.rader.filter(r=>ikToks(r.n).some(t=>qs.has(t) && !IK_ALG.includes(t)));
+  if(!algs.length && !rows.length) return null;
+  if(!algs.length && !qs.has(ikCanon("allergen"))) return null;
+  const c=document.createElement("div"); c.className="ik-ans";
+  let html=`<span class="k">Frå allergenoversikta</span>`;
+  algs.forEach(a=>{ const col=A.kolonner[IK_ALG.indexOf(a)];
+    const y=A.rader.filter(r=>r.v[col]==="✓").map(r=>r.n), s=A.rader.filter(r=>r.v[col]==="!").map(r=>r.n);
+    html+=`<p class="q">${esc(col)}</p><p class="a">${y.length?"<b>Inneheld:</b> "+esc(y.join(", "))+".":"Ingen ingrediensar i lista inneheld "+esc(col.toLowerCase())+"."}${s.length?"<br><b>Kan innehalde spor:</b> "+esc(s.join(", "))+".":""}</p>`; });
+  rows.forEach(r=>{ const y=A.kolonner.filter(k=>r.v[k]==="✓"), s=A.kolonner.filter(k=>r.v[k]==="!");
+    html+=`<p class="q">${esc(r.n)}</p><p class="a">${y.length?"<b>Inneheld:</b> "+esc(y.join(", ").toLowerCase()):"Ingen av dei 14 allergena"}${s.length?" · <b>spor av:</b> "+esc(s.join(", ").toLowerCase()):""}</p>`; });
+  html+=`<p class="a" style="font-size:14px;color:var(--ink2)">Sjekk alltid etiketten – leverandørar kan endre innhald.</p>`;
+  c.innerHTML=html;
+  const l=document.createElement("button"); l.type="button"; l.className="ik-link"; l.textContent="Sjå heile allergenoversikta ›"; l.onclick=()=>openSec("mat-G"); c.appendChild(l);
+  return c;
+}
+function ikResults(forced){
+  const out=$("ikOut"); if(!out) return; out.innerHTML="";
+  const q=ikQuery.trim();
+  if(!q){
+    const [g1,l1]=ikGroup("Vanlege spørsmål");
+    const pick=["Kor gammal må ein vere for å kjøpe energidrikk?","Kor mange pakkar paracet eller ibux kan ein kunde kjøpe?","Kor kaldt skal kjøleskapet vere?","Korleis skal pølser og bacon tinast?","Kva godtek me som legitimasjon?","Kva gjer eg viss noko er gale, t.d. feil temperatur eller eit utstyr som ikkje verkar?","Kva allergen er det i ein hamburgar?","Kunden spør kva tablett han bør ta – kva seier eg?"];
+    pick.map(x=>IK.faq.find(f=>f.q===x)).filter(Boolean).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f))));
+    const more=document.createElement("button"); more.type="button"; more.className="ik-row"; more.innerHTML=`<span class="lt q">${IK.faq.length}</span><span class="tx"><b style="color:var(--accent)">Sjå alle spørsmåla</b></span>${CHEV}`;
+    more.onclick=()=>{ more.remove(); IK.faq.filter(f=>!pick.includes(f.q)).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f)))); };
+    l1.appendChild(more); out.appendChild(g1);
+    IK.permar.forEach(p=>{ const [g,l]=ikGroup(p.namn+" – "+p.tittel.toLowerCase());
+      p.bolkar.forEach(s=>l.appendChild(ikRowEl(s.b, p.id==="sal"?"sal":"", s.tittel, s.intro, ()=>openSec(s.id)))); out.appendChild(g); });
+    const n=document.createElement("p"); n.className="status"; n.textContent="Henta frå IK-mat-permen og internkontrollpermen for sal. Ved tvil: spør Kristoffer."; out.appendChild(n);
+    return;
+  }
+  const {qt,res}=ikSearch(q);
+  const top = forced ? {d:{kind:"faq",f:forced}} : res.find(r=>r.d.kind==="faq" && r.sc>=3);
+  const alg = ikAllergenHits(qt);
+  if(top) out.appendChild(ikAnswerCard(top.d.f, qt, "Svar"));
+  if(alg) out.appendChild(alg);
+  const rest=res.filter(r=>!top || r.d!==top.d).slice(0,8);
+  if(rest.length){
+    const [g,l]=ikGroup(top||alg ? "Andre treff" : "Treff");
+    rest.forEach(r=>{ const d=r.d;
+      if(d.kind==="faq") l.appendChild(ikRowEl("?","q",d.f.q,"",()=>faqOpen(d.f),ikMark(d.f.a.length>140?d.f.a.slice(0,137)+"…":d.f.a,qt)));
+      else l.appendChild(ikRowEl(d.sec.b, d.perm.id==="sal"?"sal":"", d.head ? `${d.head}` : d.sec.tittel, "", ()=>openSec(d.sec.id, d.head), `<span style="color:var(--ink2)">${esc(d.perm.namn)} · ${esc(d.sec.tittel)}</span><br>${ikMark(ikSnippet(d.body,qt),qt)}`));
+    });
+    out.appendChild(g);
+  }
+  if(!top && !alg && !rest.length){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ikkje noko svar på det. Prøv andre ord, eller spør Kristoffer."; out.appendChild(e); }
+}
+function renderIKSection(root){
+  const f=findSec(ikSec); if(!f){ ikSec=null; renderIK(); return; }
+  const back=document.createElement("button"); back.type="button"; back.className="ik-back"; back.textContent="‹ Internkontroll";
+  back.onclick=()=>{ ikSec=null; root.remove(); renderIK(); }; root.appendChild(back);
+  const body=document.createElement("article"); body.className="ik-body";
+  let html=`<p class="perm">${esc(f.p.namn)} · del ${esc(f.s.b)}</p><h2>${esc(f.s.tittel)}</h2>`;
+  if(f.s.intro) html+=`<p style="color:var(--ink2)">${esc(f.s.intro)}</p>`;
+  f.s.innhald.forEach(b=>{
+    if(b.t==="h") html+=`<h3 data-h="${esc(b.x)}">${esc(b.x)}</h3>`;
+    else if(b.t==="p") html+=`<p>${esc(b.x)}</p>`;
+    else if(b.t==="note") html+=`<p class="nt">${esc(b.x)}</p>`;
+    else if(b.t==="kv") html+=`<dl>${b.r.map(r=>`<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join("")}</dl>`;
+    else if(b.t==="ul") html+=`<ul>${b.l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    else if(b.t==="ol") html+=`<ol>${b.l.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`;
+    else if(b.t==="check") html+=`<ul class="ck">${b.l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    else if(b.t==="allergen"){ const A=IK.allergen;
+      html+=`<div class="algwrap"><table class="alg"><thead><tr><th>Ingrediens</th>${A.kolonner.map(k=>`<th>${esc(k)}</th>`).join("")}</tr></thead><tbody>${A.rader.map(r=>`<tr><td>${esc(r.n)}</td>${A.kolonner.map(k=>{const v=r.v[k]||""; return `<td class="${v==="✓"?"y":v==="!"?"s":""}">${v}</td>`;}).join("")}</tr>`).join("")}</tbody></table></div><p style="font-size:14px;color:var(--ink2)">✓ = inneheld · ! = kan innehalde spor · tomt = inneheld ikkje. Sveip sidelengs for å sjå alle allergena.</p>`; }
+  });
+  body.innerHTML=html; root.appendChild(body);
+  if(ikHead){ const h=[...body.querySelectorAll("h3")].find(x=>x.dataset.h===ikHead); if(h){ requestAnimationFrame(()=>{ h.scrollIntoView({block:"start"}); h.classList.add("hit-h"); }); } }
+}
+loadIK();
 
 // ---- Ting me må bestilla: data/bestilling.json ----
 let orders = [], ordersSha = null, ordersEtag = null, ordersBusy = false;
