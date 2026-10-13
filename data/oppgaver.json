@@ -40,7 +40,7 @@
    {
     "id": "boss",
     "t": "Tøm alt bosset, ute og inne",
-    "s": "Det store bosset ved kaien og oppe, og bosset inne – ny pose oppi.",
+    "s": "Det store bosset ved kaien og oppe, og bosset inne – ny pose oppi alltid.",
     "vakt": "kveld"
    },
    {
@@ -170,8 +170,8 @@
     },
     {
      "id": "vegg-stal",
-     "t": "Stålglans på veggane",
-     "s": "Berre veggane.",
+     "t": "Stålglans på veggane og frontane",
+     "s": "Berre veggane og frontane.",
      "vakt": "dag"
     },
     {
