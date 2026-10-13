@@ -4,35 +4,66 @@
   "intro": "Gjeld alltid, uansett kva dag det er.",
   "tasks": [
    {
-    "id": "tining",
-    "t": "Sjekk tining før du går heim",
-    "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter.",
-    "viktig": true,
-    "vakt": "kveld"
+    "id": "tkmv6mi6sx0",
+    "t": "Køyr opp portane",
+    "s": "Ikkje heilt opp – berre til «stopp».",
+    "vakt": "dag"
    },
    {
-    "id": "rein",
-    "t": "Butikken er rein og fin",
-    "s": "Ekstremt viktig heile dagen. Men butikken må vaskast grundig kvar kveld",
+    "id": "tkmv6mi6sx1",
+    "t": "Vask behaldarane til salat, tomat og agurk",
+    "vakt": "dag"
+   },
+   {
+    "id": "tkmv6mi6sx2",
+    "t": "Kutt opp salat, tomat og løk",
+    "s": "Bruk hanskar.",
+    "vakt": "dag"
+   },
+   {
+    "id": "tkmv6mi6sx3",
+    "t": "Steik pølser og sjekk tining",
+    "s": "Sjekk om pølser eller bacon må tinast. Tin alltid i kjøleskapet, og skriv dato på pakken.",
     "viktig": true,
+    "vakt": "dag"
+   },
+   {
+    "id": "tkmv6mi6sx4",
+    "t": "Set på steikeplata og frityren",
+    "vakt": "dag"
+   },
+   {
+    "id": "tkmv6mi6sx5",
+    "t": "Vask det offentlege toalettet",
+    "s": "Bruk den rosa kluten. Sjekk at det er papir og såpe.",
     "vakt": "kveld"
    },
    {
     "id": "boss",
-    "t": "Tøm det store bosset ute",
-    "s": "Både ved kaien og det som står oppe.",
+    "t": "Tøm alt bosset, ute og inne",
+    "s": "Det store bosset ved kaien og oppe, og bosset inne – ny pose oppi.",
     "vakt": "kveld"
    },
    {
-    "id": "tmupnk6xa",
-    "t": "Skru av alle apparat",
-    "s": "Alle plater, grillar og omnar må skruast av før ein går heim",
-    "viktig": true,
+    "id": "tkmv6mi6sx6",
+    "t": "Vask steikeplata og rullegrillen",
+    "s": "Vask godt rundt steikeplata, der er det mykje feitt. Hugs bak plata.",
+    "vakt": "kveld"
+   },
+   {
+    "id": "tmuv0sjbi",
+    "t": "Vask over kjøkkenområdet grundig",
+    "s": "Det skal ikkje vera rotete, skittent eller mykje avfall i kjøkkenområdet. Vask grundig over alle overflater slik at det ikkje er feitt rundt plaster og på benkane",
+    "vakt": "kveld"
+   },
+   {
+    "id": "tkmv6mi6sx7",
+    "t": "Desinfiser blendaren",
     "vakt": "kveld"
    },
    {
     "id": "tmv0lq14f",
-    "t": "Vask golvet inne på jernvarerommet",
+    "t": "Vask golvet – også i jernvareavdelinga",
     "s": "Dette MÅ gjerast kvar dag.",
     "vakt": "kveld"
    },
@@ -43,29 +74,77 @@
     "vakt": "kveld"
    },
    {
-    "id": "tmupnirxo",
-    "t": "Skriv ner om noko må bestillast",
-    "s": "Skriv ner på lappar om me er tomme fopr varer eller om kundar ynskjer ei vare."
+    "id": "tining",
+    "t": "Sjekk tining før du går heim",
+    "s": "Pølser, bacon, brød osv. – så me ikkje står tomme dagen etter.",
+    "viktig": true,
+    "vakt": "kveld"
    },
    {
-    "id": "tmupnj580",
-    "t": "Bosset inne",
-    "s": "Bosset inn må tømmast og ny pose må oppi før ein går heim."
+    "id": "tkmv6mi6sx8",
+    "t": "Ta kveldsoppgjeret",
+    "s": "Berre dei som jobbar her skal vite summen på dagsomsetninga.",
+    "viktig": true,
+    "vakt": "kveld"
+   },
+   {
+    "id": "tmupnk6xa",
+    "t": "Skru av alle apparat",
+    "s": "Alle plater, grillar og omnar – og malingmaskina og ristarane.",
+    "viktig": true,
+    "vakt": "kveld"
+   },
+   {
+    "id": "tkmv6mi6sx9",
+    "t": "Sjekk at terrassevarmarane er av",
+    "viktig": true,
+    "vakt": "kveld"
+   },
+   {
+    "id": "tkmv6mi6sx10",
+    "t": "Køyr ned portane",
+    "vakt": "kveld"
+   },
+   {
+    "id": "tmupnm9rp",
+    "t": "Vaskerom",
+    "s": "Vaskerommet skal vera låst om natta",
+    "vakt": "kveld"
+   },
+   {
+    "id": "tkmv6mi6sy11",
+    "t": "Lås døra og gå heim",
+    "s": "God natt!",
+    "vakt": "kveld"
+   },
+   {
+    "id": "rein",
+    "t": "Butikken og uteområdet er reine",
+    "s": "Fritt for boss heile dagen. Butikken må vaskast grundig kvar kveld.",
+    "viktig": true
+   },
+   {
+    "id": "tkmv6mi6sy12",
+    "t": "Vask borda i kafeavdelinga"
+   },
+   {
+    "id": "tkmv6mi6sy13",
+    "t": "Rull bacon på pølsene og veg opp kebab"
+   },
+   {
+    "id": "tkmv6mi6sy14",
+    "t": "Fyll på brus og andre varer",
+    "s": "Hugs: det nye skal alltid bakerst."
+   },
+   {
+    "id": "tmupnirxo",
+    "t": "Skriv opp varer me må eller bør bestille",
+    "s": "Bruk fana «Bestill» – skann strekkoden eller skriv inn varenamnet."
    },
    {
     "id": "tmupnlchj",
     "t": "Herre og Dame - toalett",
     "s": "Dei skal vera stengde og berre opnast i nødstilfelle."
-   },
-   {
-    "id": "tmupnm9rp",
-    "t": "Vaskerom",
-    "s": "Vaskerommet skal vera låst om natta"
-   },
-   {
-    "id": "tmuv0sjbi",
-    "t": "Vask over kjøkkenområdet grundig",
-    "s": "Det skal ikkje vera rotete, skittent eller mykje avfall i kjøkkenområdet. Vask grundig over alle overflater slik at det ikkje er feitt rundt plaster og på benkane"
    }
   ]
  },
@@ -248,5 +327,5 @@
    "tasks": []
   }
  },
- "melding": "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til ein kommentar eller eit bilete.\nAlle oppgåvene MÅ kryssast av kvar dag."
+ "melding": "Trykk på sirkelen for å krysse av. Trykk på oppgåva for å leggje til ein kommentar eller eit bilete.\nAlle oppgåvene MÅ kryssast av kvar dag.\n\nHugs:\n• Berre dei som jobbar her skal bak disken og på bakrommet.\n• Hald ro i butikken og kafeavdelinga. Det er ikkje lov å ta med mat frå Spar eller andre butikkar.\n• Legemiddel blir berre selt til personar over 18 år, og aldri 2 pakkar av same sort samtidig. Les den kvite permen «Salg av legemiddel»."
 }
