@@ -21,7 +21,6 @@
     "id": "boss",
     "t": "Tøm det store bosset ute",
     "s": "Både ved kaien og det som står oppe.",
-    "viktig": true,
     "vakt": "kveld"
    },
    {
@@ -35,14 +34,12 @@
     "id": "tmv0lq14f",
     "t": "Vask golvet inne på jernvarerommet",
     "s": "Dette MÅ gjerast kvar dag.",
-    "viktig": true,
     "vakt": "kveld"
    },
    {
     "id": "tmv0k9u2n",
     "t": "VIKTIG! Sjekk uteområde (under tak) før du går heim",
     "s": "Vask borda, kost gulvet, skru av lampar.",
-    "viktig": true,
     "vakt": "kveld"
    },
    {
