@@ -182,7 +182,19 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .seg button{position:relative}
 .badge{position:absolute;top:1px;left:calc(50% + 5px);min-width:17px;height:17px;padding:0 5px;box-sizing:border-box;border-radius:99px;background:#ff3b30;color:#fff;font-size:11px;font-weight:700;line-height:17px;text-align:center;letter-spacing:0}
 /* ---------- bestilling ---------- */
-.oform{display:grid;grid-template-columns:1fr 84px;gap:8px;background:var(--cell);border-radius:16px;padding:12px}
+.oform{display:grid;grid-template-columns:1fr auto;gap:8px;background:var(--cell);border-radius:16px;padding:12px}
+.scanbtn{display:flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:600;border:none;border-radius:12px;padding:0 14px;background:rgba(0,122,255,.10);color:var(--accent);cursor:pointer}
+.scanbtn:active{transform:scale(.96)}
+.ohint{grid-column:1/-1;margin:0;font-size:14px;color:#c45f00;background:rgba(255,149,0,.12);border-radius:10px;padding:8px 12px}
+.scan{position:fixed;inset:0;z-index:90;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan .frame{position:relative;width:min(78vw,340px);aspect-ratio:1.6;border-radius:22px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.9)}
+.scan .frame::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:#ff3b30;box-shadow:0 0 12px #ff3b30;animation:scanline 1.6s ease-in-out infinite alternate}
+@keyframes scanline{from{transform:translateY(-38px)}to{transform:translateY(38px)}}
+.scan p{position:relative;margin:22px 24px 0;color:#fff;font-size:16px;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.scan .close{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);font:inherit;font-size:17px;font-weight:600;border:none;border-radius:999px;padding:14px 34px;color:#fff;background:rgba(255,255,255,.18);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-140%);z-index:95;max-width:calc(100% - 32px);padding:12px 18px;border-radius:999px;background:rgba(28,28,30,.92);color:#fff;font-size:15px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.2);transition:transform .45s var(--spring)}
+.toast.on{transform:translate(-50%,0)}
 .oform input{font:inherit;font-size:17px;padding:12px 14px;border:none;border-radius:12px;background:var(--fill);color:var(--ink);min-width:0;outline:none}
 .oform input:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
 .oform .btn{grid-column:1/-1}
@@ -269,6 +281,8 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
     <div class="row2"><button class="btn ghost" type="button" id="tsClose">Avbryt</button><button class="btn danger" type="button" id="tsUndo">Angre avkryssing</button></div>
   </div>
   <div class="lightbox" id="lightbox" hidden><img id="lbImg" alt=""></div>
+  <div class="scan" id="scanOv" hidden><video id="scanVideo" playsinline muted></video><div class="frame"></div><p id="scanMsg">Hald strekkoden inni ramma</p><button type="button" class="close" id="scanClose">Avbryt</button></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="sheet" id="nameSheet" hidden role="dialog" aria-labelledby="sheetTitle">
     <div class="grab"></div>
     <h2 id="sheetTitle">Kven er du?</h2>
@@ -653,9 +667,10 @@ function renderOrders(){
     list.innerHTML = "";
     const form = document.createElement("form"); form.id="oForm"; form.className="oform"; form.autocomplete="off";
     const ti = document.createElement("input"); ti.id="oText"; ti.type="text"; ti.placeholder="Kva må bestillast?"; ti.maxLength=120; ti.setAttribute("aria-label","Vare");
-    const qi = document.createElement("input"); qi.id="oQty"; qi.type="text"; qi.placeholder="Tal"; qi.maxLength=20; qi.setAttribute("aria-label","Tal eller mengd");
+    const sb = document.createElement("button"); sb.type="button"; sb.className="scanbtn"; sb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8"/></svg><span>Skann</span>'; sb.onclick=openScanner;
+    const hint = document.createElement("p"); hint.id="oHint"; hint.className="ohint"; hint.hidden=true;
     const bt = document.createElement("button"); bt.className="btn"; bt.type="submit"; bt.textContent="Legg til";
-    form.append(ti, qi, bt);
+    form.append(ti, sb, hint, bt);
     form.onsubmit = (e)=>{ e.preventDefault(); addOrder(); };
     const ol = document.createElement("div"); ol.id="oList"; ol.style.cssText="display:flex;flex-direction:column;gap:26px";
     list.append(form, ol);
@@ -677,9 +692,8 @@ function orderRow(o){
   hit.onclick=()=>toggleOrder(o.id);
   const txt=document.createElement("span"); txt.className="txt";
   const b=document.createElement("b"); b.textContent=o.tekst;
-  if(o.tal){ const q=document.createElement("span"); q.className="qty"; q.textContent=o.tal; b.appendChild(q); }
   txt.appendChild(b);
-  const sm=document.createElement("small"); sm.textContent=`Lagt inn av ${o.namn} ${fmtWhen(o.tid)}`; txt.appendChild(sm);
+  const sm=document.createElement("small"); sm.textContent=`Lagt inn av ${o.namn} ${fmtWhen(o.tid)}` + (o.ean ? ` · ${o.ean}` : ""); txt.appendChild(sm);
   if(o.bestilt){ const w=document.createElement("span"); w.className="who"; w.textContent=`Bestilt av ${o.bestilt.namn} ${fmtWhen(o.bestilt.tid)}`; txt.appendChild(w); }
   row.append(hit, txt);
   const me=nameInput.value.trim();
@@ -692,14 +706,106 @@ function orderRow(o){
   item.appendChild(row); return item;
 }
 function addOrder(){
-  const ti=$("oText"), qi=$("oQty"); const tekst=ti.value.trim(); if(!tekst){ ti.focus(); return; }
+  const ti=$("oText"); const tekst=ti.value.trim(); if(!tekst){ ti.focus(); return; }
+  if(/^\d{8,14}$/.test(tekst)){ ti.value=""; onScanned(tekst); return; }   // handskannar som skriv inn tal
   const namn=nameInput.value.trim(); if(!namn){ openSheet(); return; }
+  const ean = pendingEan; pendingEan = null; setHint("");
+  ti.value=""; ti.placeholder="Kva må bestillast?"; ti.focus();
+  pushOrder(tekst, ean);
+  if(ean) learnVare(ean, tekst);
+}
+function pushOrder(tekst, ean){
+  const namn=nameInput.value.trim();
   const it={id:"o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), tekst, namn, tid:Date.now()};
-  const tal=qi.value.trim(); if(tal) it.tal=tal;
-  ti.value=""; qi.value=""; ti.focus();
+  if(ean) it.ean=ean;
   orders=[it, ...orders]; renderOrders(); updateBadge();
   changeOrders(arr=>[it, ...arr.filter(x=>x.id!==it.id)], `Må bestillast: ${tekst}`);
 }
+
+// ---- Strekkodar ----
+let VARER = {}, pendingEan = null, varerLoaded = false;
+const normEan = c => String(c).replace(/\D/g,"").replace(/^0+/,"");
+async function loadVarer(){
+  const out = {};
+  for(const f of ["varer-laert.json","varer.json"]){   // det offisielle registeret vinn over det lærte
+    try{ const r=await fetch(API+f+"?t="+Date.now(),{headers:headers({"Accept":"application/vnd.github.raw"}),cache:"no-store"});
+      if(r.ok){ const j=await r.json(); for(const [k,v] of Object.entries(j.varer||{})) out[normEan(k)]=v; } }catch(e){}
+  }
+  VARER = out; varerLoaded = true;
+}
+async function learnVare(ean, namn){
+  VARER[ean] = namn;
+  for(let attempt=0; attempt<4; attempt++){
+    try{
+      const g=await fetch(API+"varer-laert.json?t="+Date.now(),{headers:headers(),cache:"no-store"});
+      let cur={varer:{}}, sha=null;
+      if(g.ok){ const j=await g.json(); sha=j.sha; try{ cur=JSON.parse(b64dec(j.content)); }catch(e){} }
+      cur.varer = cur.varer || {}; cur.varer[ean] = namn;
+      const body={message:`Ny vare: ${namn} (${ean})`, content:b64enc(JSON.stringify(cur,null,1))}; if(sha) body.sha=sha;
+      const r=await fetch(API+"varer-laert.json",{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
+      if(r.ok) return;
+      if(r.status===409||r.status===422){ await new Promise(res=>setTimeout(res,400+Math.random()*800)); continue; }
+      return;
+    }catch(e){ return; }
+  }
+}
+function setHint(t){ const h=$("oHint"); if(!h) return; h.textContent=t; h.hidden=!t; }
+let toastTimer=null;
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("on"),2600); }
+async function onScanned(raw){
+  const ean = normEan(raw); if(!ean) return;
+  try{ navigator.vibrate && navigator.vibrate(60); }catch(e){}
+  if(!varerLoaded) await loadVarer();
+  const namn = VARER[ean];
+  if(view!=="bestill") setView("bestill");
+  if(namn){
+    if(!nameInput.value.trim()){ pendingEan=ean; $("oText").value=namn; openSheet(); return; }
+    const dup = orders.find(o=>!o.bestilt && (o.ean===ean || o.tekst.toLowerCase()===namn.toLowerCase()));
+    if(dup){ toast(`«${namn}» står allereie på lista`); return; }
+    pushOrder(namn, ean); toast(`Lagt til: ${namn}`);
+  } else {
+    pendingEan = ean;
+    const ti=$("oText"); ti.value=""; ti.placeholder="Skriv namnet på vara"; ti.focus();
+    setHint(`Ukjend strekkode (${ean}). Skriv namnet på vara og trykk Legg til, så kjenner appen ho att neste gong.`);
+  }
+}
+let scanStream=null, scanCtl=null, scanDone=false;
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+async function openScanner(){
+  const ov=$("scanOv"), video=$("scanVideo"); ov.hidden=false; scanDone=false; $("scanMsg").textContent="Hald strekkoden inni ramma";
+  if(!varerLoaded) loadVarer();
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720}}, audio:false});
+  }catch(e){ $("scanMsg").textContent="Får ikkje bruke kameraet. Gje sida løyve til kamera i nettlesaren og prøv igjen."; return; }
+  video.srcObject=scanStream; try{ await video.play(); }catch(e){}
+  const finish = code=>{ if(scanDone) return; scanDone=true; closeScanner(); onScanned(code); };
+  if("BarcodeDetector" in window){
+    try{
+      const sup = await BarcodeDetector.getSupportedFormats();
+      const want = ["ean_13","ean_8","upc_a","upc_e","code_128"].filter(f=>sup.includes(f));
+      if(want.length){
+        const det = new BarcodeDetector({formats:want});
+        const tick = async()=>{ if(scanDone || !scanStream) return; try{ const r=await det.detect(video); if(r.length) return finish(r[0].rawValue); }catch(e){} setTimeout(tick,120); };
+        tick(); return;
+      }
+    }catch(e){}
+  }
+  try{
+    if(!window.ZXingBrowser){
+      try{ await loadScript("https://cdn.jsdelivr.net/npm/@zxing/browser@0.2.1/umd/zxing-browser.min.js"); }
+      catch(e){ await loadScript("https://unpkg.com/@zxing/browser@0.2.1/umd/zxing-browser.min.js"); }
+    }
+    if(scanDone || !scanStream) return;
+    const reader = new ZXingBrowser.BrowserMultiFormatReader();
+    scanCtl = await reader.decodeFromVideoElement(video, (res)=>{ if(res) finish(res.getText()); });
+  }catch(e){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } $("scanMsg").textContent="Skannaren kunne ikkje starte. Sjekk nettet, eller skriv inn vara i staden."; }
+}
+function closeScanner(){
+  try{ scanCtl && scanCtl.stop(); }catch(e){} scanCtl=null;
+  if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
+  const v=$("scanVideo"); v.srcObject=null; $("scanOv").hidden=true;
+}
+$("scanClose").onclick=()=>{ scanDone=true; closeScanner(); };
 function toggleOrder(id){
   const namn=nameInput.value.trim(); if(!namn){ openSheet(); return; }
   const cur=orders.find(o=>o.id===id); if(!cur) return;
