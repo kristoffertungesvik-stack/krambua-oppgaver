@@ -202,6 +202,9 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ik-row .lt{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;background:#d7141e}
 .ik-row .lt.sal{background:#5856d6}
 .ik-row .lt.kasse{background:#248a3d}
+.ik-row .lt.tel{background:rgba(52,199,89,.15);color:#248a3d;font-size:13px;border-radius:50%}
+.ik-row .num{flex:none;font-size:15px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+a.ik-row{text-decoration:none;box-sizing:border-box}
 .ik-row .lt.q{background:rgba(0,122,255,.12);color:var(--accent)}
 .ik-row .tx{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
 .ik-row .tx b{font-weight:600;font-size:16px}
@@ -688,6 +691,56 @@ function visibleItems(dow, todayView){
 function dayGroupName(grp){ return grp.title && grp.title.includes("–") ? grp.title.replace(/^[^–]*–\s*/,"") : (grp.title||""); }
 
 
+
+// ---- Telefonliste: data/kontaktar.json, kryptert med nøkkelen i lenkja (repoet er offentleg) ----
+let CONTACTS=null, contactsSha=null, contactsTried=false;
+async function ckKey(tok){ const h=await crypto.subtle.digest("SHA-256", new TextEncoder().encode("krambua-kontaktar|"+tok)); return crypto.subtle.importKey("raw",h,"AES-GCM",false,["encrypt","decrypt"]); }
+const u8b64=u=>{ let s=""; u.forEach(c=>s+=String.fromCharCode(c)); return btoa(s); };
+const b64u8=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+async function loadContacts(){
+  if(!TOKEN) return null;
+  const r=await fetch(API+"kontaktar.json?t="+Date.now(),{headers:headers(),cache:"no-store"});
+  if(!r.ok){ contactsTried=true; return null; }
+  const j=await r.json(); contactsSha=j.sha;
+  const box=JSON.parse(b64dec(j.content));
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64u8(box.iv)}, await ckKey(TOKEN), b64u8(box.ct));
+  CONTACTS=JSON.parse(new TextDecoder().decode(pt)).kontaktar||[]; contactsTried=true;
+  return CONTACTS;
+}
+async function saveContacts(list){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv}, await ckKey(TOKEN), new TextEncoder().encode(JSON.stringify({kontaktar:list}))));
+  const content=b64enc(JSON.stringify({v:1,iv:u8b64(iv),ct:u8b64(ct)}));
+  for(let a=0;a<4;a++){
+    const g=await fetch(API+"kontaktar.json?t="+Date.now(),{headers:headers(),cache:"no-store"});
+    const sha=g.ok ? (await g.json()).sha : null;
+    const body={message:"Telefonlista oppdatert (kryptert)", content}; if(sha) body.sha=sha;
+    const r=await fetch(API+"kontaktar.json",{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
+    if(r.ok){ CONTACTS=list; return true; }
+    if(r.status!==409 && r.status!==422) throw new Error("HTTP "+r.status);
+  }
+  return false;
+}
+function fmtTel(n){ const d=String(n||"").replace(/\D/g,""); return d.length===8 ? d.replace(/(\d{3})(\d{2})(\d{3})/,"$1 $2 $3") : d; }
+function initials(n){ return n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function contactRow(c, qt){
+  const a=document.createElement(c.tlf?"a":"div"); a.className="ik-row"; if(c.tlf) a.href="tel:+47"+String(c.tlf).replace(/\D/g,"");
+  const sub = c.notat ? (qt?ikMark(c.notat,qt):esc(c.notat)) : "";
+  a.innerHTML=`<span class="lt tel">${esc(initials(c.namn))}</span><span class="tx"><b>${qt?ikMark(c.namn,qt):esc(c.namn)}</b>${sub?`<small>${sub}</small>`:""}</span><span class="num">${c.tlf?esc(fmtTel(c.tlf)):"–"}</span>`;
+  if(c.tlf) a.setAttribute("aria-label",`Ring ${c.namn}, ${fmtTel(c.tlf)}`);
+  return a;
+}
+function contactsGroup(list, qt, title){
+  const [g,l]=ikGroup(title||"Telefonliste"); list.forEach(c=>l.appendChild(contactRow(c,qt))); return g;
+}
+function contactHits(qt){
+  if(!CONTACTS || !CONTACTS.length) return null;
+  const qs=new Set(qt), tel=ikCanon("telefon"), q2=new Set([...qs].filter(t=>t!==tel));
+  const hits=CONTACTS.filter(c=>ikDocToks(c.namn+" "+(c.notat||"")).some(t=>q2.has(t)));
+  if(hits.length) return hits;
+  return qs.has(ikCanon("telefon")) ? CONTACTS : null;
+}
+
 // ---- Internkontroll: ik.json (permar, vanlege spørsmål og søk) ----
 let IK=null, ikSec=null, ikHead=null, ikQuery="", ikIndex=null, ikLoading=false;
 async function loadIK(){
@@ -743,7 +796,9 @@ const IK_SYN=[
  "faktura fakturere fakturerast",
  "bedrift firma bedriftskunde",
  "differanse diff",
- "pengar penger kontantar kontanter cash"
+ "pengar penger kontantar kontanter cash",
+ "telefon telefonnummer nummer nr tlf mobil mobilnummer ring ringe kontakt kontaktar telefonliste",
+ "terminal bankterminal betalingsterminal"
 ].map(g=>g.split(" "));
 const IK_ALG=["gluten","skaldyr","egg","fisk","peanøtter","soya","mjølk","nøtter","selleri","sennep","sesam","sulfitt","lupin","blautdyr"];
 function ikStem(w){
@@ -828,6 +883,7 @@ function renderIK(){
   const list=$("list"); list.innerHTML="";
   const root=document.createElement("div"); root.id="ikRoot"; root.style.cssText="display:flex;flex-direction:column;gap:22px";
   list.appendChild(root);
+  if(!CONTACTS && !contactsTried && TOKEN){ contactsTried=true; loadContacts().then(()=>{ if(view==="ik" && !ikSec){ ikResults(); } }).catch(()=>{}); }
   if(!IK){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent= ikLoading||!navigator.onLine ? "Hentar internkontrollen …" : "Hentar internkontrollen …"; root.appendChild(e); loadIK(); return; }
   if(ikSec){ renderIKSection(root); return; }
   const sw=document.createElement("form"); sw.className="ik-search"; sw.setAttribute("role","search"); sw.onsubmit=e=>{ e.preventDefault(); const i=$("ikQ"); i && i.blur(); };
@@ -881,6 +937,7 @@ function ikResults(forced){
     const more=document.createElement("button"); more.type="button"; more.className="ik-row"; more.innerHTML=`<span class="lt q">${IK.faq.length}</span><span class="tx"><b style="color:var(--accent)">Sjå alle spørsmåla</b></span>${CHEV}`;
     more.onclick=()=>{ more.remove(); IK.faq.filter(f=>!pick.includes(f.q)).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f)))); };
     l1.appendChild(more); out.appendChild(g1);
+    if(CONTACTS && CONTACTS.length) out.appendChild(contactsGroup(CONTACTS, null, "Telefonliste"));
     IK.permar.forEach(p=>{ const [g,l]=ikGroup(p.namn+" – "+p.tittel.toLowerCase());
       p.bolkar.forEach(s=>l.appendChild(ikRowEl(s.b, p.id==="mat"?"":p.id, s.tittel, s.intro, ()=>openSec(s.id)))); out.appendChild(g); });
     const n=document.createElement("p"); n.className="status"; n.textContent="Henta frå IK-mat-permen og internkontrollpermen for sal. Ved tvil: spør Kristoffer."; out.appendChild(n);
@@ -889,7 +946,9 @@ function ikResults(forced){
   const {qt,res}=ikSearch(q);
   const top = forced ? {d:{kind:"faq",f:forced}} : res.find(r=>r.d.kind==="faq" && r.sc>=3);
   const alg = ikAllergenHits(qt);
-  if(top) out.appendChild(ikAnswerCard(top.d.f, qt, "Svar"));
+  const ch = contactHits(qt);
+  if(ch) out.appendChild(contactsGroup(ch, qt, ch===CONTACTS ? "Telefonliste" : "Kontakt"));
+  if(top && !(ch && top.sc<6)) out.appendChild(ikAnswerCard(top.d.f, qt, "Svar"));
   if(alg) out.appendChild(alg);
   const rest=res.filter(r=>!top || r.d!==top.d).slice(0,8);
   if(rest.length){
@@ -900,7 +959,7 @@ function ikResults(forced){
     });
     out.appendChild(g);
   }
-  if(!top && !alg && !rest.length){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ikkje noko svar på det. Prøv andre ord, eller spør Kristoffer."; out.appendChild(e); }
+  if(!top && !alg && !rest.length && !ch){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ikkje noko svar på det. Prøv andre ord, eller spør Kristoffer."; out.appendChild(e); }
 }
 function renderIKSection(root){
   const f=findSec(ikSec); if(!f){ ikSec=null; renderIK(); return; }
@@ -1258,7 +1317,9 @@ $("keySave").onclick = async ()=>{
     const j = await r.json();
     if(!(j.permissions && j.permissions.push)){ $("keyMsg").textContent="Nøkkelen kan berre lese. Den må ha Contents: Read and write."; return; }
   }catch(e){ $("keyMsg").textContent="Får ikkje kontakt med GitHub. Prøv igjen."; return; }
+  let oldContacts = null; if(TOKEN && TOKEN!==k){ try{ oldContacts = CONTACTS || await loadContacts(); }catch(e){} }
   store("krambua-nokkel", k); TOKEN = k; canWrite = true; forceSetup = false; etag = {}; tasksEtag = null;
+  if(oldContacts && oldContacts.length){ try{ await saveContacts(oldContacts); }catch(e){} }   // telefonlista blir kryptert på nytt med den nye nøkkelen
   isOwner = $("bossChk").checked; store("krambua-sjef", isOwner ? "1" : null);
   $("keyInput").value=""; showSetup(); render(); refresh();
 };
