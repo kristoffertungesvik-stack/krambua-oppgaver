@@ -1,0 +1,12 @@
+{
+ "id": "pad787b",
+ "sub": {
+  "endpoint": "https://fcm.googleapis.com/fcm/send/ecYkttTb-Bs:APA91bFLk47VqiagIQ6On1V1CXQGbrWZ2MaqbGoRzbBRqHcZFlFW1-UTa4I68Lppeau-ouxNNmppuwxkRppP94GYvBgSFUt8X_VevvDUesvcU5TOaVJqg7qo9ZZh-6fvAgFL-gaJ-f2M",
+  "expirationTime": null,
+  "keys": {
+   "p256dh": "BLXtJGlfAUe0HIVE6pEbEqAmMBDTfxuKvDTVk1OnvzY0NEhLXz2s-9c8dZslcTtJF9FjefU2ggMa1bii7-XfYZ0",
+   "auth": "jV3FwIeNjsYDiPKb6x4c5w"
+  }
+ },
+ "laga": "2026-10-15T13:12:30.645Z"
+}
