@@ -254,6 +254,8 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
 .pushbox p{margin:0;color:var(--ink2);text-align:left}
 .pushbox button{align-self:flex-start;font:inherit;font-size:15px;font-weight:600;border:none;background:none;color:var(--accent);padding:0;cursor:pointer}
 .nextshift{margin:0;font-size:14px;font-weight:600;color:#248a3d}
+.ct-staff{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink2)}
+.ed-row .ct-staff input{width:18px;height:18px;margin:0;padding:0;flex:none;accent-color:var(--accent)}
 /* ---------- bestilling ---------- */
 .oform{display:grid;grid-template-columns:1fr auto;gap:8px;background:var(--cell);border-radius:16px;padding:12px}
 .scanbtn{display:flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:600;border:none;border-radius:12px;padding:0 14px;background:rgba(0,122,255,.10);color:var(--accent);cursor:pointer}
@@ -773,7 +775,7 @@ function pushCard(){
 // Vel person (namnelista frå telefonlista). Trykket på namnet ber òg om løyve til varsel.
 async function openPicker(){
   if(!CONTACTS){ try{ await loadContacts(); }catch(e){} }
-  const list=(CONTACTS||[]).filter(c=>c.id);
+  const list=(CONTACTS||[]).filter(c=>c.id && c.tilsett!==false);
   if(!list.length){ openNameSheet(); return; }
   const st=pushState();
   const me=(st && st.namn || nameInput.value || "").trim().toLowerCase(); const first=me.split(/\s+/)[0];
@@ -854,7 +856,9 @@ function contactEditor(){
     const n=document.createElement("input"); n.type="text"; n.value=c.namn||""; n.placeholder="Namn"; n.oninput=()=>{ c.namn=n.value; };
     const t=document.createElement("input"); t.type="tel"; t.inputMode="tel"; t.value=c.tlf||""; t.placeholder="Telefonnummer"; t.oninput=()=>{ c.tlf=t.value; };
     const m=document.createElement("input"); m.type="text"; m.className="sub"; m.value=c.notat||""; m.placeholder="Merknad (valfritt), t.d. «Terminal»"; m.oninput=()=>{ c.notat=m.value; };
-    f.append(n,t,m);
+    const tl=document.createElement("label"); tl.className="ct-staff"; const cb=document.createElement("input"); cb.type="checkbox"; cb.checked=c.tilsett!==false; cb.onchange=()=>{ c.tilsett=cb.checked; };
+    tl.append(cb, document.createTextNode(" Tilsett – står i «Kven er du?» og får varsel"));
+    f.append(n,t,m,tl);
     const acts=document.createElement("div"); acts.className="acts";
     const mk=(txt,lbl,fn)=>{ const x=document.createElement("button"); x.type="button"; x.textContent=txt; x.setAttribute("aria-label",lbl); x.onclick=()=>{ fn(); rerender(); }; return x; };
     acts.append(mk("↑","Flytt opp",()=>{ if(i>0) [ctDraft[i-1],ctDraft[i]]=[ctDraft[i],ctDraft[i-1]]; }),
@@ -867,7 +871,7 @@ function contactEditor(){
   const save=document.createElement("button"); save.type="button"; save.className="btn"; save.textContent="Lagre telefonlista";
   const msg=document.createElement("p"); msg.className="sub"; msg.style.margin="0 4px"; msg.setAttribute("role","status");
   save.onclick=async()=>{
-    const clean=ctDraft.map(c=>{ const o={namn:(c.namn||"").trim(), tlf:(c.tlf||"").replace(/[^\d+]/g,"")}; const nt=(c.notat||"").trim(); if(nt) o.notat=nt; return o; }).filter(c=>c.namn);
+    const clean=ctDraft.map(c=>{ const o={namn:(c.namn||"").trim(), tlf:(c.tlf||"").replace(/[^\d+]/g,"")}; const nt=(c.notat||"").trim(); if(nt) o.notat=nt; o.id = c.id || ("p"+[...crypto.getRandomValues(new Uint8Array(3))].map(x=>x.toString(16).padStart(2,"0")).join("")); if(c.tilsett===false) o.tilsett=false; return o; }).filter(c=>c.namn);
     save.disabled=true; msg.textContent="Lagrar …";
     try{ const ok=await saveContacts(clean); msg.textContent= ok ? "Lagra. Telefonlista er oppdatert for alle." : "Fekk ikkje lagra. Prøv igjen."; if(ok){ ctDraft=clean.map(x=>({...x})); } }
     catch(e){ msg.textContent="Fekk ikkje lagra. Prøv igjen."; }
