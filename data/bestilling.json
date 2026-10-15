@@ -5,7 +5,11 @@
    "tekst": "Jensen Pirken S/M 40g",
    "namn": "Vetle Gunleiksrud",
    "tid": 1792076359602,
-   "ean": "7056960340642"
+   "ean": "7056960340642",
+   "bestilt": {
+    "namn": "Vetle Gunleiksrud",
+    "tid": 1792076362193
+   }
   }
  ]
 }
