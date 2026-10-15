@@ -1,0 +1,11 @@
+{
+ "id": "pad787b",
+ "sub": {
+  "endpoint": "https://web.push.apple.com/QILQKbolGQrjn_tVSlu1LKgrHqGEEA8jNI12VkgBTrCXpRPGfIGrvyuFqB2jhAeT0O9Myw0DujkHy7W5qg-CV77JFf0d7kB0OKln1MY8sMYieIj_mtUrLYMGZr3_kg6OESIcPOlGEzMpVsZTS-NW5ZFB3HqpqKdMNPfIU-H4pc8",
+  "keys": {
+   "p256dh": "BOCnN_Lgg7bV8rbvg9JarVdlMZp2lAlnFGkegLJUgRcqprGEM5MAUSF3ZDSx87BbsHE1otiGqQ8StpvZhehfHb0",
+   "auth": "sLN-De4RzQSO_Epi4NfRAA"
+  }
+ },
+ "laga": "2026-10-15T13:26:34.571Z"
+}
