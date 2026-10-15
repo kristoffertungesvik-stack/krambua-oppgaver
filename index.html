@@ -371,7 +371,7 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
   <div class="sheet" id="pushSheet" hidden role="dialog" aria-labelledby="pushTitle">
     <div class="grab"></div>
     <h2 id="pushTitle">Kven er du?</h2>
-    <p>Vel namnet ditt, så får du varsel berre når du er på vakt.</p>
+    <p id="pushSub">Vel namnet ditt.</p>
     <div id="pushList" class="ik-list" style="max-height:48vh;overflow:auto"></div>
     <button class="btn ghost" type="button" id="pushCancel">Avbryt</button>
   </div>
@@ -713,7 +713,7 @@ function dayGroupName(grp){ return grp.title && grp.title.includes("–") ? grp.
 
 
 
-// ---- Push-varsel: berre til dei som står på vaktlista (data/vakter.json) ----
+// ---- Kven er du + push-varsel: telefonen hugsar personen, og varsel blir slått på automatisk ----
 const VAPID_PUBLIC="BDtXJPqi6SOYk0iDgtENqN0LOdNPgtKP9xg5b_13EH9hQXOvgGiY7HKdLaVRFsvvVWRZWp6YhANVVoe8tFdCDgM";
 const pushOK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
 const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
@@ -721,6 +721,8 @@ const isStandalone = ()=> (window.matchMedia && matchMedia("(display-mode: stand
 let VAKTER=null, vakterTried=false;
 if(pushOK){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 function pushState(){ try{ return JSON.parse(load("krambua-push")||"null"); }catch(e){ return null; } }
+function setPushState(o){ store("krambua-push", o ? JSON.stringify(o) : null); }
+function pushOn(){ return pushOK && Notification.permission==="granted"; }
 function b64urlU8(b){ const p="=".repeat((4-b.length%4)%4); return b64u8((b+p).replace(/-/g,"+").replace(/_/g,"/")); }
 async function sha10(t){ const h=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t))); return [...h].slice(0,5).map(x=>x.toString(16).padStart(2,"0")).join(""); }
 async function loadVakter(){
@@ -741,95 +743,98 @@ function fmtShift(v){
   const when = v.d===t.date ? "i dag" : v.d===addDays(t.date,1) ? "i morgon" : wd+" "+dt.getUTCDate()+"."+(dt.getUTCMonth()+1)+".";
   return when+" "+v.fra+"–"+v.til;
 }
+// Kortet på «I dag»: neste vakt når alt er i orden, elles det som manglar (kan ikkje lukkast).
 function pushCard(){
   if(!TOKEN) return null;
   const st=pushState();
-  if(st && pushOK && Notification.permission==="granted"){
-    if(!VAKTER){ if(!vakterTried) loadVakter().then(()=>{ if(view==="today" && VAKTER) render(); }); return null; }
-    const ns=nextShift(st.id); if(!ns) return null;
-    const p=document.createElement("p"); p.className="nextshift"; p.textContent="Di neste vakt: "+fmtShift(ns); return p;
-  }
-  let snooze=0; try{ snooze=+load("krambua-push-snooze")||0; }catch(e){}
-  if(Date.now()<snooze) return null;
-  if(!pushOK && !isIOS) return null;
   const c=document.createElement("div"); c.className="pushcard";
-  const ignore=document.createElement("button"); ignore.type="button"; ignore.className="btn ghost"; ignore.textContent="Ikkje no";
-  ignore.onclick=()=>{ store("krambua-push-snooze", String(Date.now()+7*864e5)); c.remove(); };
-  const row=document.createElement("div"); row.className="row";
-  if(isIOS && !isStandalone()){
-    c.innerHTML='<b>🔔 Få påminning når du er på vakt</b><p>Legg appen på heimskjermen først: trykk Del (eller ••• og så Del) i Safari og vel «Legg til på Heim-skjerm». Opne appen derifrå, så kan du slå på varsel.</p>';
-    row.append(ignore); c.appendChild(row); return c;
+  const btn=(txt,fn)=>{ const b=document.createElement("button"); b.type="button"; b.className="btn"; b.textContent=txt; b.onclick=fn; const r=document.createElement("div"); r.className="row"; r.appendChild(b); return r; };
+  if(!st){
+    c.innerHTML='<b>👋 Kven er du?</b><p>Vel namnet ditt éin gong. Då hugsar appen deg, og du får varsel når du er på vakt.</p>';
+    c.appendChild(btn("Vel namnet mitt", openPicker)); return c;
   }
-  c.innerHTML='<b>🔔 Få påminning når du er på vakt</b><p>Du får varsel kl. 10, 12, 16:30 og 19 – berre dei dagane du står på vaktlista.</p>';
-  const on=document.createElement("button"); on.type="button"; on.className="btn"; on.textContent="Slå på varsel"; on.onclick=enablePush;
-  row.append(on, ignore); c.appendChild(row); return c;
+  if(isIOS && !isStandalone()){
+    c.innerHTML='<b>🔔 Legg appen på heimskjermen</b><p>For å få varsel når du er på vakt: trykk Del (eller ••• og så Del) i Safari, vel «Legg til på Heim-skjerm», og opne appen derifrå.</p>';
+    return c;
+  }
+  if(!pushOK) return null;
+  if(Notification.permission==="denied"){
+    c.innerHTML='<b>🔔 Varsel er blokkert</b><p>Gå til Innstillingar → Varslingar → Krambua og slå på «Tillat varslingar». Opne så appen på nytt.</p>';
+    return c;
+  }
+  if(Notification.permission!=="granted"){
+    c.innerHTML='<b>🔔 Slå på varsel</b><p>Trykk på knappen og vel «Tillat», så får du påminning når du er på vakt.</p>';
+    c.appendChild(btn("Slå på varsel", ()=>activatePush(st))); return c;
+  }
+  if(!VAKTER){ if(!vakterTried) loadVakter().then(()=>{ if(view==="today" && VAKTER) render(); }); return null; }
+  const ns=nextShift(st.id); if(!ns) return null;
+  const p=document.createElement("p"); p.className="nextshift"; p.textContent="Di neste vakt: "+fmtShift(ns); return p;
 }
-async function enablePush(){
-  if(!pushOK){ toast("Denne telefonen støttar ikkje varsel her."); return; }
-  let perm=Notification.permission;
-  if(perm!=="granted"){ try{ perm=await Notification.requestPermission(); }catch(e){} }
-  if(perm!=="granted"){ toast("Varsel er ikkje tillate. Slå det på i Innstillingar → Varslingar."); return; }
+// Vel person (namnelista frå telefonlista). Trykket på namnet ber òg om løyve til varsel.
+async function openPicker(){
   if(!CONTACTS){ try{ await loadContacts(); }catch(e){} }
   const list=(CONTACTS||[]).filter(c=>c.id);
-  if(!list.length){ toast("Fann ikkje telefonlista. Prøv igjen litt seinare."); return; }
-  const me=(nameInput.value||"").trim().toLowerCase();
-  const first=me.split(/\s+/)[0];
+  if(!list.length){ openNameSheet(); return; }
+  const st=pushState();
+  const me=(st && st.namn || nameInput.value || "").trim().toLowerCase(); const first=me.split(/\s+/)[0];
   const score=c=>{ const n=c.namn.toLowerCase(); return n===me?3 : (first && n.startsWith(first+" "))?2 : 0; };
   const sorted=[...list].sort((a,b)=>score(b)-score(a) || a.namn.localeCompare(b.namn,"nn"));
   const pl=$("pushList"); pl.innerHTML="";
   sorted.forEach(c=>{ const b=document.createElement("button"); b.type="button"; b.className="ik-row";
-    b.innerHTML='<span class="lt tel">'+esc(initials(c.namn))+'</span><span class="tx"><b>'+esc(c.namn)+'</b></span>';
-    b.onclick=()=>{ closePushSheet(); subscribeAs(c); }; pl.appendChild(b); });
-  if($("nameSheet").classList.contains("on")){ $("nameSheet").classList.remove("on"); setTimeout(()=>{ $("nameSheet").hidden=true; },400); }
+    const on = st && st.id===c.id;
+    b.innerHTML='<span class="lt tel">'+esc(initials(c.namn))+'</span><span class="tx"><b>'+esc(c.namn)+'</b></span>'+(on?'<span class="num">✓</span>':'');
+    b.onclick=()=>pickPerson(c); pl.appendChild(b); });
+  $("pushCancel").hidden = !st;
+  $("pushSub").textContent = st ? "Ikkje deg? Vel rett namn." : "Vel namnet ditt. Appen hugsar det på denne telefonen, og du får varsel når du er på vakt.";
   openPushSheet();
 }
-function openPushSheet(){ $("scrim").hidden=false; $("pushSheet").hidden=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); $("pushSheet").classList.add("on"); })); }
-function closePushSheet(){ $("pushSheet").classList.remove("on"); $("scrim").classList.remove("on"); setTimeout(()=>{ $("pushSheet").hidden=true; if(!$("nameSheet").classList.contains("on")) $("scrim").hidden=true; },400); }
-$("pushCancel").onclick=closePushSheet;
-async function subscribeAs(c){
+function pickPerson(c){
+  const old=pushState();
+  nameInput.value=c.namn; store("krambua-namn", c.namn); setAvatar();
+  $("nameBox").classList.remove("need"); $("nameHint").textContent="";
+  const st={id:c.id, namn:c.namn, file: old && old.id===c.id ? old.file : null};
+  if(old && old.file && old.id!==c.id) deleteData(old.file).catch(()=>{});   // telefonen har bytt person
+  setPushState(st); closePushSheet();
+  activatePush(st);   // køyrer i same trykk, så iPhone godtek spørsmålet om løyve
+  render();
+}
+async function activatePush(st){
+  if(!pushOK) return;
+  let perm=Notification.permission;
+  if(perm==="default"){ try{ perm=await Notification.requestPermission(); }catch(e){} }
+  if(perm!=="granted"){ render(); return; }
+  await syncPush(true);
+}
+// Sørgjer for at abonnementet til denne telefonen er lagra – køyrer kvar gong appen opnar.
+async function syncPush(announce){
+  const st=pushState(); if(!st || !TOKEN || !pushOn()) return;
   try{
     const reg=await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
     if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:b64urlU8(VAPID_PUBLIC)});
-    const j=sub.toJSON(); const file="push/"+c.id+"-"+(await sha10(j.endpoint))+".json";
-    const old=pushState(); if(old && old.file && old.file!==file) await deleteData(old.file).catch(()=>{});
-    const g=await fetch(API+file+"?t="+Date.now(),{headers:headers(),cache:"no-store"}); const sha=g.ok?(await g.json()).sha:null;
-    const body={message:"Varsel slått på", content:b64enc(JSON.stringify({id:c.id, sub:j, laga:new Date().toISOString()},null,1))}; if(sha) body.sha=sha;
-    const r=await fetch(API+file,{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    store("krambua-push", JSON.stringify({id:c.id, namn:c.namn, file}));
-    if(!nameInput.value.trim()){ nameInput.value=c.namn.split(" ")[0]; store("krambua-namn", nameInput.value); setAvatar(); }
-    await loadVakter(); toast("Varsel er på 🔔"); render();
-  }catch(e){ toast("Fekk ikkje slått på varsel. Prøv igjen."); }
+    const j=sub.toJSON(); const file="push/"+st.id+"-"+(await sha10(j.endpoint))+".json";
+    if(st.file && st.file!==file) await deleteData(st.file).catch(()=>{});
+    const g=await fetch(API+file+"?t="+Date.now(),{headers:headers(),cache:"no-store"});
+    if(!g.ok){
+      const body={message:"Varsel slått på", content:b64enc(JSON.stringify({id:st.id, sub:j, laga:new Date().toISOString()},null,1))};
+      const r=await fetch(API+file,{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
+      if(!r.ok && r.status!==422) throw new Error("HTTP "+r.status);
+    }
+    setPushState({...st, file});
+    await loadVakter();
+    if(announce) toast("Varsel er på 🔔");
+    if(view==="today") render();
+  }catch(e){ if(announce) toast("Fekk ikkje slått på varsel. Prøv igjen."); }
 }
 async function deleteData(file){
   const g=await fetch(API+file+"?t="+Date.now(),{headers:headers(),cache:"no-store"}); if(!g.ok) return;
   const sha=(await g.json()).sha;
-  await fetch(API+file,{method:"DELETE",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify({message:"Varsel slått av",sha})});
+  await fetch(API+file,{method:"DELETE",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify({message:"Telefonen bytte person",sha})});
 }
-async function disablePush(){
-  const st=pushState();
-  try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); if(sub) await sub.unsubscribe(); }catch(e){}
-  if(st && st.file) await deleteData(st.file).catch(()=>{});
-  store("krambua-push", null); toast("Varsel er slått av"); renderPushBox(); render();
-}
-function renderPushBox(){
-  const box=$("pushBox"); if(!box) return; box.innerHTML="";
-  if(!TOKEN) return;
-  const st=pushState();
-  if(st && pushOK && Notification.permission==="granted"){
-    const p=document.createElement("p"); p.textContent="🔔 Varsel er på for "+st.namn+".";
-    box.appendChild(p);
-    const ns=nextShift(st.id); if(ns){ const q=document.createElement("p"); q.className="nextshift"; q.textContent="Neste vakt: "+fmtShift(ns); box.appendChild(q); }
-    const off=document.createElement("button"); off.type="button"; off.textContent="Slå av varsel"; off.onclick=disablePush; box.appendChild(off);
-    if(!VAKTER && !vakterTried) loadVakter().then(()=>{ if($("nameSheet").classList.contains("on")) renderPushBox(); });
-  } else if(pushOK && (!isIOS || isStandalone())){
-    const p=document.createElement("p"); p.textContent="Få påminning når du er på vakt.";
-    const on=document.createElement("button"); on.type="button"; on.textContent="Slå på varsel"; on.onclick=enablePush; box.append(p,on);
-  } else if(isIOS){
-    const p=document.createElement("p"); p.textContent="Legg appen på heimskjermen for å få varsel når du er på vakt."; box.appendChild(p);
-  }
-}
+function openPushSheet(){ $("scrim").hidden=false; $("pushSheet").hidden=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); $("pushSheet").classList.add("on"); })); }
+function closePushSheet(){ $("pushSheet").classList.remove("on"); $("scrim").classList.remove("on"); setTimeout(()=>{ $("pushSheet").hidden=true; if(!$("nameSheet").classList.contains("on")) $("scrim").hidden=true; },400); }
+$("pushCancel").onclick=closePushSheet;
+function renderPushBox(){ const box=$("pushBox"); if(box) box.innerHTML=""; }
 
 // ---- Rediger telefonlista (eige lagre-knapp, kryptert) ----
 let ctDraft=null;
@@ -1511,13 +1516,15 @@ $("copyLink").onclick = async ()=>{
 };
 $("hideShare").onclick = ()=>{ store("krambua-skjul-deling","1"); showSetup(); };
 showSetup();
-function openSheet(){ renderPushBox(); $("scrim").hidden=false; $("nameSheet").hidden=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); $("nameSheet").classList.add("on"); })); setTimeout(()=>nameInput.focus(),350); }
+function openSheet(){ if(TOKEN){ openPicker(); return; } openNameSheet(); }
+function openNameSheet(){ $("scrim").hidden=false; $("nameSheet").hidden=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); $("nameSheet").classList.add("on"); })); setTimeout(()=>nameInput.focus(),350); }
 function closeSheet(){ if(!nameInput.value.trim()){ $("nameBox").classList.add("need"); $("nameHint").textContent="Skriv namnet ditt først."; return; } $("scrim").classList.remove("on"); $("nameSheet").classList.remove("on"); setTimeout(()=>{ $("scrim").hidden=true; $("nameSheet").hidden=true; },450); }
 function setAvatar(){ const n=nameInput.value.trim(); $("avatarBtn").textContent = n ? n[0].toUpperCase() : "?"; }
-$("avatarBtn").onclick=openSheet; $("sheetDone").onclick=closeSheet; $("scrim").onclick=closeSheet;
+$("avatarBtn").onclick=openSheet; $("sheetDone").onclick=closeSheet;
+$("scrim").onclick=()=>{ if($("pushSheet").classList.contains("on")){ if(pushState()) closePushSheet(); return; } closeSheet(); };
 nameInput.addEventListener("input", setAvatar);
 nameInput.addEventListener("keydown", e=>{ if(e.key==="Enter") closeSheet(); });
-setAvatar(); if(!nameInput.value.trim() && TOKEN) openSheet();
+setAvatar(); if(TOKEN && !pushState()) openSheet(); else syncPush(false);
 // ---- Oppgåve-ark: kommentar og bilete ----
 const REPO_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
 const imgCache = {};
