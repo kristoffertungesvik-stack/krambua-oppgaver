@@ -1,0 +1,11 @@
+{
+ "id": "p894076",
+ "sub": {
+  "endpoint": "https://web.push.apple.com/QJkuMFGV91688HQJl7XxV5GJAVUzpGLSkUFI1kMakQ1eSSCSRiKQcW6P3m3vfehueCtSNTFeRzX7rnI5lAFyc9BukqHASBU9tJzvIDQaqpJj8nx8l5t_FOC3htFs9O5SNSqrXfeuiL1N0SF9A6AAXFUKm6jFNjGxU8-wiKxIHdw",
+  "keys": {
+   "p256dh": "BBbnMC7aJD-c-y0M47YmjPZV-U8PU95bOGw68jva8Lj_jcz8L4OKD2kMiGWRGKUDiO1XhjihTxvdzRb5dmRGSso",
+   "auth": "5NsX5BGQnGlEUn0A7wLvTQ"
+  }
+ },
+ "laga": "2026-10-15T13:41:39.571Z"
+}
