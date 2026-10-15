@@ -254,6 +254,11 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
 .pushbox p{margin:0;color:var(--ink2);text-align:left}
 .pushbox button{align-self:flex-start;font:inherit;font-size:15px;font-weight:600;border:none;background:none;color:var(--accent);padding:0;cursor:pointer}
 .nextshift{margin:0;font-size:14px;font-weight:600;color:#248a3d}
+.isteps{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:12px;text-align:left}
+.isteps li{counter-increment:st;display:flex;gap:12px;align-items:flex-start;font-size:16px;line-height:1.4}
+.isteps li::before{content:counter(st);flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;margin-top:-1px}
+.isteps .ico{width:20px;height:20px;vertical-align:-4px;color:var(--accent);margin:0 2px}
+.isteps .inote{display:block;font-size:14px;color:var(--ink2);margin-top:2px}
 .ct-staff{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink2)}
 .ed-row .ct-staff input{width:18px;height:18px;margin:0;padding:0;flex:none;accent-color:var(--accent)}
 /* ---------- bestilling ---------- */
@@ -369,6 +374,12 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
     </div>
     <div id="pushBox" class="pushbox"></div>
     <button class="btn" type="button" id="sheetDone">Ferdig</button>
+  </div>
+  <div class="sheet" id="installSheet" hidden role="dialog" aria-labelledby="installTitle">
+    <div class="grab"></div>
+    <h2 id="installTitle">Legg til på heimskjerm</h2>
+    <ol class="isteps" id="installSteps"></ol>
+    <button class="btn" type="button" id="installDone">Ok</button>
   </div>
   <div class="sheet" id="pushSheet" hidden role="dialog" aria-labelledby="pushTitle">
     <div class="grab"></div>
@@ -655,7 +666,7 @@ function render(){
     if(isToday){ const p=document.createElement("span"); p.className="pill"; p.textContent="I dag"; h.appendChild(p); }
     const m=document.createElement("span"); m.className="meta"; m.textContent=`${pretty(d.date)} · ${n}/${all.length}`;
     head.append(h,m); sec.appendChild(head);
-    if(isToday && view!=="week"){ const pc=pushCard(); if(pc) sec.appendChild(pc); }
+    if(isToday && view!=="week"){ const ic=installCard(); if(ic) sec.appendChild(ic); const pc=pushCard(); if(pc) sec.appendChild(pc); }
     if(isToday && view!=="week"){ const txt=(MELDING===null ? DEFAULT_TIP : MELDING).trim(); if(txt){ const tip=document.createElement("p"); tip.className="tip"+(MELDING!==null && MELDING!==DEFAULT_TIP ? " beskjed" : ""); tip.textContent=txt; sec.appendChild(tip); } }
     const todayView = isToday && view!=="week";
     if(hasShifts(d.dow)){
@@ -751,13 +762,10 @@ function pushCard(){
   const st=pushState();
   const c=document.createElement("div"); c.className="pushcard";
   const btn=(txt,fn)=>{ const b=document.createElement("button"); b.type="button"; b.className="btn"; b.textContent=txt; b.onclick=fn; const r=document.createElement("div"); r.className="row"; r.appendChild(b); return r; };
+  if(isIOS && !isStandalone()) return null;   // installCard tek seg av dette
   if(!st){
     c.innerHTML='<b>👋 Kven er du?</b><p>Vel namnet ditt éin gong. Då hugsar appen deg, og du får varsel når du er på vakt.</p>';
     c.appendChild(btn("Vel namnet mitt", openPicker)); return c;
-  }
-  if(isIOS && !isStandalone()){
-    c.innerHTML='<b>🔔 Legg appen på heimskjermen</b><p>For å få varsel når du er på vakt: trykk Del (eller ••• og så Del) i Safari, vel «Legg til på Heim-skjerm», og opne appen derifrå.</p>';
-    return c;
   }
   if(!pushOK) return null;
   if(Notification.permission==="denied"){
@@ -837,6 +845,61 @@ function openPushSheet(){ $("scrim").hidden=false; $("pushSheet").hidden=false; 
 function closePushSheet(){ $("pushSheet").classList.remove("on"); $("scrim").classList.remove("on"); setTimeout(()=>{ $("pushSheet").hidden=true; if(!$("nameSheet").classList.contains("on")) $("scrim").hidden=true; },400); }
 $("pushCancel").onclick=closePushSheet;
 function renderPushBox(){ const box=$("pushBox"); if(box) box.innerHTML=""; }
+
+
+// ---- Legg til på heimskjerm (Android: installasjonsdialog, iPhone: rettleiing) ----
+const isAndroid=/Android/i.test(navigator.userAgent);
+const inAppBrowser=/FBAN|FBAV|Instagram|Snapchat|Messenger|Line\/|GSA\//i.test(navigator.userAgent);
+let deferredInstall=null;
+if(!isIOS){ const ml=document.querySelector('link[rel="manifest"]'); if(ml) ml.href="manifest-a.webmanifest"; }   // Android: start_url (deler lagring med Chrome)
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredInstall=e; if(view==="today") render(); });
+window.addEventListener("appinstalled", ()=>{ deferredInstall=null; toast("Krambua er lagd til på heimskjermen 🎉"); if(view==="today") render(); });
+function installCard(){
+  if(isStandalone()) return null;
+  if(!isIOS && !isAndroid && !deferredInstall) return null;   // PC: ingen kort
+  const c=document.createElement("div"); c.className="pushcard";
+  c.innerHTML='<b>📲 Legg appen på heimskjermen</b><p>'+(isIOS ? "Då opnar du han med eitt trykk – og det må til for å få varsel når du er på vakt." : "Då opnar du han med eitt trykk, akkurat som ein vanleg app.")+'</p>';
+  const r=document.createElement("div"); r.className="row";
+  const b=document.createElement("button"); b.type="button"; b.className="btn"; b.textContent="Legg til på heimskjerm"; b.onclick=installApp;
+  r.appendChild(b); c.appendChild(r); return c;
+}
+async function installApp(){
+  if(deferredInstall){
+    const ev=deferredInstall; deferredInstall=null;
+    try{ ev.prompt(); const ch=await ev.userChoice; if(ch && ch.outcome==="accepted") return; }catch(e){}
+    if(view==="today") render();
+    return;
+  }
+  openInstallSheet();
+}
+function installSteps(){
+  const SH='<svg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3v12\"/><path d=\"M8 7l4-4 4 4\"/><path d=\"M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1\"/></svg>', PL='<svg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"4\"/><path d=\"M12 8v8M8 12h8\"/></svg>', DT='<svg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"5\" r=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><circle cx=\"12\" cy=\"19\" r=\"2\"/></svg>';
+  if(isIOS && inAppBrowser) return [
+    "Du har opna lenkja inne i ein annan app. Trykk på ••• eller "+SH+" og vel <b>«Opne i Safari»</b>.",
+    "Følg så stega i Safari: Del "+SH+" → <b>«Legg til på Heim-skjerm»</b> "+PL+"."];
+  if(isIOS && /CriOS|FxiOS|EdgiOS/.test(navigator.userAgent)) return [
+    "Trykk på Del-knappen "+SH+" oppe til høgre i adresselinja.",
+    "Vel <b>«Legg til på Heim-skjerm»</b> "+PL+". <span class=\"inote\">Ser du det ikkje, bla litt ned i lista.</span>",
+    "Trykk <b>«Legg til»</b> oppe til høgre.",
+    "Opne Krambua frå heimskjermen."];
+  if(isIOS) return [
+    "Trykk på Del-knappen "+SH+" nedst i Safari. <span class=\"inote\">Ser du han ikkje, trykk først på ••• nede til høgre.</span>",
+    "Bla ned og vel <b>«Legg til på Heim-skjerm»</b> "+PL+".",
+    "La <b>«Opne som nettapp»</b> vere på, og trykk <b>«Legg til»</b>.",
+    "Opne Krambua frå heimskjermen – ikkje frå Safari."];
+  return [
+    "Trykk på menyen "+DT+" oppe til høgre i Chrome.",
+    "Vel <b>«Legg til på startskjermen»</b> eller <b>«Installer app»</b>. <span class=\"inote\">I Samsung Internet: menyen ☰ nede → «Legg til side på» → «Startskjerm».</span>",
+    "Trykk <b>«Installer»</b> eller <b>«Legg til»</b>.",
+    "Opne Krambua frå startskjermen."];
+}
+function openInstallSheet(){
+  $("installSteps").innerHTML=installSteps().map(x=>"<li><span>"+x+"</span></li>").join("");
+  $("scrim").hidden=false; $("installSheet").hidden=false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ $("scrim").classList.add("on"); $("installSheet").classList.add("on"); }));
+}
+function closeInstallSheet(){ $("installSheet").classList.remove("on"); $("scrim").classList.remove("on"); setTimeout(()=>{ $("installSheet").hidden=true; $("scrim").hidden=true; },400); }
+$("installDone").onclick=closeInstallSheet;
 
 // ---- Rediger telefonlista (eige lagre-knapp, kryptert) ----
 let ctDraft=null;
@@ -1525,10 +1588,10 @@ function openNameSheet(){ $("scrim").hidden=false; $("nameSheet").hidden=false; 
 function closeSheet(){ if(!nameInput.value.trim()){ $("nameBox").classList.add("need"); $("nameHint").textContent="Skriv namnet ditt først."; return; } $("scrim").classList.remove("on"); $("nameSheet").classList.remove("on"); setTimeout(()=>{ $("scrim").hidden=true; $("nameSheet").hidden=true; },450); }
 function setAvatar(){ const n=nameInput.value.trim(); $("avatarBtn").textContent = n ? n[0].toUpperCase() : "?"; }
 $("avatarBtn").onclick=openSheet; $("sheetDone").onclick=closeSheet;
-$("scrim").onclick=()=>{ if($("pushSheet").classList.contains("on")){ if(pushState()) closePushSheet(); return; } closeSheet(); };
+$("scrim").onclick=()=>{ if($("installSheet").classList.contains("on")){ closeInstallSheet(); return; } if($("pushSheet").classList.contains("on")){ if(pushState()) closePushSheet(); return; } closeSheet(); };
 nameInput.addEventListener("input", setAvatar);
 nameInput.addEventListener("keydown", e=>{ if(e.key==="Enter") closeSheet(); });
-setAvatar(); if(TOKEN && !pushState()) openSheet(); else syncPush(false);
+setAvatar(); if(TOKEN && !pushState() && !(isIOS && !isStandalone())) openSheet(); else syncPush(false);
 // ---- Oppgåve-ark: kommentar og bilete ----
 const REPO_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
 const imgCache = {};
