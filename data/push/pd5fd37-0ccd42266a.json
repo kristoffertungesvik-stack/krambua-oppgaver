@@ -1,0 +1,11 @@
+{
+ "id": "pd5fd37",
+ "sub": {
+  "endpoint": "https://web.push.apple.com/QPSG0xoxRq4bTj5ja9JeIPsqDo6SZ_Y4M-apB-Cprbz9lcFySaNFEij8FfrRFX51feJy1JJAfR9SlZZk_4umAgVg55MpUD5jGH3ffkBZGSh0_msMI7rDLIx-oT_LSDfy5NmbMhSN-Zd2FpYToz4p8dFcMW2R8isuIauqYx-Z27U",
+  "keys": {
+   "p256dh": "BKIFWY8wkLtKKq-i7zAW5TKIkLxjwLJKs1Bjm9vjWovKDeh0R-r5Tqz1-9gOhgdf7zOCg5uWl5vUrn4hoKwHp30",
+   "auth": "JwiZwbm6ejZF2cF9pGqYgQ"
+  }
+ },
+ "laga": "2026-10-16T13:59:31.191Z"
+}
