@@ -202,6 +202,7 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ik-row .lt{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;background:#d7141e}
 .ik-row .lt.sal{background:#5856d6}
 .ik-row .lt.kasse{background:#248a3d}
+.ik-row .lt.maling{background:#c2410c}
 .ik-row .lt.tel{background:rgba(52,199,89,.15);color:#248a3d;font-size:13px;border-radius:50%}
 .ik-row .num{flex:none;font-size:15px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
 a.ik-row{text-decoration:none;box-sizing:border-box}
@@ -1051,7 +1052,14 @@ const IK_SYN=[
  "differanse diff",
  "pengar penger kontantar kontanter cash",
  "telefon telefonnummer nummer nr tlf mobil mobilnummer ring ringe kontakt kontaktar telefonliste",
- "terminal bankterminal betalingsterminal"
+ "terminal bankterminal betalingsterminal",
+ "maling malinga målinga",
+ "beis beise beisen",
+ "glans glansgrad glansen",
+ "blande blanding blandar blandinga blander",
+ "spann spannet bøtte",
+ "base basen",
+ "farge fargar farger fargekode fargekoden"
 ].map(g=>g.split(" "));
 const IK_ALG=["gluten","skaldyr","egg","fisk","peanøtter","soya","mjølk","nøtter","selleri","sennep","sesam","sulfitt","lupin","blautdyr"];
 function ikStem(w){
