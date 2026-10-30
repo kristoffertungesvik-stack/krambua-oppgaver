@@ -1,0 +1,169 @@
+{
+ "items": [
+  {
+   "id": "vask-steikeplate",
+   "namn": "Steikeplata (stor)",
+   "merke": "Dag",
+   "ofte": "Skrap etter bruk. Vask grundig kvar dag ved stengetid.",
+   "middel": "Ugn & Grill – 10 pump i ein kopp",
+   "utstyr": "Kopp, papir og gul svamp",
+   "steg": [
+    "Skru av steikeplata.",
+    "Hell på 4 koppar vatn.",
+    "Tøm behaldaren.",
+    "Tett hòlet med papir.",
+    "Hell på om lag ¾ kopp vatn.",
+    "Ha 10 pump Ugn & Grill i ein kopp, og hell det på plata.",
+    "La det liggje i minst 7 minutt.",
+    "Skrubb av med gul svamp.",
+    "Opne hòlet og tøm behaldaren.",
+    "Skyl med vatn minst to gonger."
+   ],
+   "merknad": "Vask godt rundt steikeplata – der er det mykje feitt. Hugs bak plata."
+  },
+  {
+   "id": "vask-rullegrill",
+   "namn": "Rullegrillen",
+   "merke": "Dag",
+   "ofte": "Kvar dag",
+   "middel": "Fuktig klut og papir",
+   "utstyr": "",
+   "steg": [
+    "Vask rullegrillen med fuktig klut.",
+    "Tørk av med papir.",
+    "Ta ut fettsamlaren under grillen og vask han."
+   ],
+   "merknad": ""
+  },
+  {
+   "id": "vask-baconpolse",
+   "namn": "Baconpølse-grillen",
+   "merke": "",
+   "ofte": "",
+   "middel": "Zalo og stålull",
+   "utstyr": "",
+   "steg": [
+    "Vask på same måte som den store steikeplata, men med Zalo og stålull."
+   ],
+   "merknad": "Sjå «Steikeplata (stor)» for stega."
+  },
+  {
+   "id": "vask-vifte",
+   "namn": "Vifta",
+   "merke": "Mån",
+   "ofte": "Kvar måndag, av den som er fyrst på jobb",
+   "middel": "Zalo, fettløysing og desinfeksjon",
+   "utstyr": "Stol å stå på, fuktig klut og papir",
+   "steg": [
+    "Ta ned vifta og vask ho i vasken med Zalo.",
+    "Tørk ut alt feittet som er oppi vifta. Bruk ein stol å stå på.",
+    "Bruk fettløysing og fuktig klut.",
+    "Ta desinfeksjon til slutt, og tørk av med papir."
+   ],
+   "merknad": ""
+  },
+  {
+   "id": "vask-vegg",
+   "namn": "Veggen",
+   "merke": "Mån",
+   "ofte": "Kvar måndag, av den som er fyrst på jobb",
+   "middel": "Desinfeksjon og fuktig klut",
+   "utstyr": "",
+   "steg": [
+    "Ta desinfeksjon og fuktig klut over heile veggen.",
+    "Tørk av."
+   ],
+   "merknad": "Kluten må vere rein."
+  },
+  {
+   "id": "vask-salatbar",
+   "namn": "Salatbaren og grønsaksbehaldarane",
+   "merke": "Mån",
+   "ofte": "Behaldarane til salat, tomat og agurk: kvar dag (dagvakt). Salatbaren grundig kvar måndag.",
+   "middel": "Zalo til behaldarane, Superquick nedi salatbaren",
+   "utstyr": "",
+   "steg": [
+    "Vask alle behaldarane i vasken med Zalo.",
+    "Vask nedi salatbaren med Superquick og klut."
+   ],
+   "merknad": ""
+  },
+  {
+   "id": "vask-kjolfrys",
+   "namn": "Kjøleskap og fryseskap",
+   "merke": "Veke",
+   "ofte": "Éin gong i veka",
+   "middel": "Superquick spray",
+   "utstyr": "",
+   "steg": [
+    "Kjøleskap: vask inni og utanpå.",
+    "Fryseskap: vask utanpå."
+   ],
+   "merknad": ""
+  },
+  {
+   "id": "vask-frityr",
+   "namn": "Frityren",
+   "merke": "Tor",
+   "ofte": "Kvar torsdag, av den som er på jobb om morgonen",
+   "middel": "Zalo",
+   "utstyr": "",
+   "steg": [],
+   "merknad": "Er olja lite brukt, kan ho silast og brukast att etter at sjølve frityren er vaska."
+  },
+  {
+   "id": "vask-kaffi",
+   "namn": "Kaffimaskinen",
+   "merke": "Dag",
+   "ofte": "Kvar dag, kvar måndag og éin gong i månaden",
+   "middel": "Zalo, klortablett",
+   "utstyr": "",
+   "steg": [
+    "Kvar dag: køyr reingjeringsprogrammet, og vask/brygg vekk kalk- og mjølkerestar.",
+    "Kvar måndag: skyl med vatn.",
+    "Éin gong i månaden: reingjer med klortablett."
+   ],
+   "merknad": ""
+  },
+  {
+   "id": "vask-softis",
+   "namn": "Softismaskinen",
+   "merke": "Mån",
+   "ofte": "Måndag og tysdag kvar veke, av fyrstevakta",
+   "middel": "Softisvask og desinfisering",
+   "utstyr": "",
+   "steg": [],
+   "merknad": "Følg vaskelista som heng ved softismaskinen."
+  },
+  {
+   "id": "vask-slush",
+   "namn": "Slush-maskina (skurp)",
+   "merke": "14d",
+   "ofte": "Torsdag, kvar 14. dag, av fyrstevakta",
+   "middel": "Softisvask og desinfisering",
+   "utstyr": "",
+   "steg": [],
+   "merknad": "Følg vaskelista som heng ved slush-maskina."
+  },
+  {
+   "id": "vask-golv",
+   "namn": "Golvet",
+   "merke": "Dag",
+   "ofte": "Kvar dag etter stengetid, elles når det er skittent",
+   "middel": "Grønsåpe, salmiakk eller Ecolab Wash'n Walk",
+   "utstyr": "",
+   "steg": [],
+   "merknad": "Hugs jernvareavdelinga òg."
+  },
+  {
+   "id": "vask-bord",
+   "namn": "Borda inne og ute",
+   "merke": "Dag",
+   "ofte": "Etter bruk og ved behov",
+   "middel": "Zalo",
+   "utstyr": "",
+   "steg": [],
+   "merknad": ""
+  }
+ ]
+}
