@@ -10,7 +10,11 @@
    "id": "omvo5k4fqnket",
    "tekst": "Epok 23",
    "namn": "Vetle Gunleiksrud",
-   "tid": 1792952387702
+   "tid": 1792952387702,
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793356561601
+   }
   },
   {
    "id": "omv9p7nmiooiy",
