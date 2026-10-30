@@ -203,6 +203,14 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ik-row .lt.sal{background:#5856d6}
 .ik-row .lt.kasse{background:#248a3d}
 .ik-row .lt.maling{background:#c2410c}
+.vform{display:flex;flex-direction:column;gap:12px;background:var(--cell);border-radius:18px;padding:16px}
+.vform label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--ink2)}
+.vform input,.vform select,.vform textarea{font:inherit;font-size:16px;font-weight:400;padding:11px 12px;border:none;border-radius:12px;background:var(--fill);color:var(--ink);width:100%;box-sizing:border-box;outline:none}
+.vform textarea{resize:vertical;line-height:1.45}
+.vform input:focus,.vform select:focus,.vform textarea:focus{box-shadow:0 0 0 3px rgba(0,122,255,.25)}
+.vform .hint{font-weight:400;font-size:13px;color:var(--ink3)}
+.vform .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vform .del{margin-left:auto;font:inherit;font-size:15px;font-weight:600;border:none;border-radius:12px;padding:10px 14px;background:var(--fill2);color:#ff3b30;cursor:pointer}
 .ik-row .lt.vask{background:rgba(0,122,255,.12);color:var(--accent);font-size:11px;width:40px;border-radius:10px;letter-spacing:-.01em}
 .ik-row .lt.tel{background:rgba(52,199,89,.15);color:#248a3d;font-size:13px;border-radius:50%}
 .ik-row .num{flex:none;font-size:15px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
@@ -591,7 +599,7 @@ $("vToday").onclick=()=>setView("today");
 $("vWeek").onclick=()=>setView("week");
 $("vOrder").onclick=()=>setView("bestill");
 $("vIK").onclick=()=>{ ikSec=null; setView("ik"); };
-$("vVask").onclick=()=>{ vaskSec=null; vaskQuery=""; setView("vask"); };
+$("vVask").onclick=()=>{ vaskSec=null; vaskQuery=""; vaskEdit=null; vaskTried=false; const r=$("vaskRoot"); if(r) r.remove(); setView("vask"); };
 $("vEdit").onclick=()=>{ editorBuilt=false; draft=null; setView("edit"); };
 $("wkPrev").onclick=()=>{weekOffset--; setView("week");};
 $("wkNext").onclick=()=>{weekOffset++; setView("week");};
@@ -918,10 +926,14 @@ function renderVask(){
   const root=document.createElement("div"); root.id="vaskRoot"; root.style.cssText="display:flex;flex-direction:column;gap:22px"; list.appendChild(root);
   if(!IK){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Hentar vaskerutinane …"; root.appendChild(e);
     const t=setInterval(()=>{ if(IK){ clearInterval(t); if(view==="vask"){ root.remove(); renderVask(); } } },300); loadIK(); return; }
+  if(!vaskTried){ vaskTried=true; loadVask().then(()=>{ if(view==="vask"){ const r=$("vaskRoot"); if(r) r.remove(); renderVask(); } }); }
+  if(vaskEdit){ renderVaskForm(root); return; }
   if(vaskSec){
     const keep=ikSec, keepH=ikHead; ikSec=vaskSec; ikHead=vaskHead; renderIKSection(root); ikSec=keep; ikHead=keepH;
     const bk=root.querySelector(".ik-back"); if(bk){ bk.textContent="‹ Vask"; bk.onclick=()=>{ vaskSec=null; vaskHead=null; root.remove(); renderVask(); window.scrollTo({top:0}); }; }
     root.querySelectorAll(".perm").forEach(x=>x.textContent="Vask");
+    if(isOwner && VASK){ const it=VASK.find(x=>x.id===vaskSec); if(it){ const eb=document.createElement("button"); eb.type="button"; eb.className="btn ghost"; eb.textContent="Rediger";
+      eb.onclick=()=>{ vaskEdit=JSON.parse(JSON.stringify(it)); const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); }; root.appendChild(eb); } }
     return;
   }
   const sw=document.createElement("form"); sw.className="ik-search"; sw.setAttribute("role","search"); sw.onsubmit=e=>{ e.preventDefault(); const i=$("vQ"); i && i.blur(); };
@@ -935,7 +947,7 @@ function renderVask(){
   vaskResults();
 }
 function vaskRow(sec, sub){
-  const b=ikRowEl(sec.b, "vask", sec.tittel, "", ()=>{ vaskSec=sec.id; vaskHead=null; const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); }, sub || esc(sec.intro||""));
+  const b=ikRowEl(sec.b || "•", "vask", sec.tittel, "", ()=>{ vaskSec=sec.id; vaskHead=null; const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); }, sub || esc(sec.intro||""));
   return b;
 }
 function vaskResults(){
@@ -943,9 +955,13 @@ function vaskResults(){
   const P=vaskPerm(); if(!P){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ingen vaskerutinar."; out.appendChild(e); return; }
   const q=vaskQuery.trim();
   if(!q){
-    const groups=[["Kvar dag",x=>x.b==="Dag"],["Kvar veke",x=>["Mån","Tor","Veke"].includes(x.b)],["Sjeldnare og ved behov",x=>!["Dag","Mån","Tor","Veke"].includes(x.b)]];
+    const WK=["Mån","Tys","Ons","Tor","Fre","Lau","Søn","Veke"];
+    const groups=[["Kvar dag",x=>x.b==="Dag"],["Kvar veke",x=>WK.includes(x.b)],["Sjeldnare og ved behov",x=>x.b!=="Dag" && !WK.includes(x.b)]];
     groups.forEach(([t,fn])=>{ const items=P.bolkar.filter(fn); if(!items.length) return; const [g,l]=ikGroup(t); items.forEach(sec=>l.appendChild(vaskRow(sec))); out.appendChild(g); });
-    const n=document.createElement("p"); n.className="status"; n.textContent="Trykk på eit utstyr for å sjå korleis det skal vaskast."; out.appendChild(n);
+    if(isOwner && VASK){ const add=document.createElement("button"); add.type="button"; add.className="btn ghost"; add.textContent="+ Legg til utstyr";
+      add.onclick=()=>{ vaskEdit={id:"vask-"+Date.now().toString(36), namn:"", merke:"Dag", kort:"", ofte:"", middel:"", utstyr:"", steg:[], merknad:"", ny:true}; const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); };
+      out.appendChild(add); }
+    const n=document.createElement("p"); n.className="status"; n.textContent= isOwner ? "Trykk på eit utstyr for å sjå eller endre korleis det skal vaskast." : "Trykk på eit utstyr for å sjå korleis det skal vaskast."; out.appendChild(n);
     return;
   }
   const {qt,res}=ikSearch(q);
@@ -956,6 +972,91 @@ function vaskResults(){
   mine.forEach(r=>{ if(r.d.kind==="sec" && !seen.has(r.d.sec.id)){ seen.add(r.d.sec.id); rows.push(r); } });
   if(rows.length){ const [g,l]=ikGroup(top ? "Rutinar" : "Treff"); rows.slice(0,8).forEach(r=>l.appendChild(vaskRow(r.d.sec, ikMark(ikSnippet(r.d.body,qt),qt)))); out.appendChild(g); }
   if(!top && !rows.length){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ikkje noko om det. Prøv eit anna ord, eller spør Kristoffer."; out.appendChild(e); }
+}
+
+
+// ---- Vaskelista kan endrast av sjefen: data/vask.json ----
+let VASK=null, vaskTried=false, vaskEdit=null;
+const MERKE=[["Dag","Kvar dag"],["Mån","Måndag"],["Tys","Tysdag"],["Ons","Onsdag"],["Tor","Torsdag"],["Fre","Fredag"],["Lau","Laurdag"],["Søn","Sundag"],["Veke","Kvar veke"],["14d","Kvar 14. dag"],["Mnd","Kvar månad"],["Behov","Ved behov"],["","Ikkje sett"]];
+function vaskToBolkar(items){
+  return items.map(it=>{
+    const inn=[]; const kv=[];
+    if(it.ofte) kv.push(["Kor ofte",it.ofte]); if(it.middel) kv.push(["Middel",it.middel]); if(it.utstyr) kv.push(["Utstyr",it.utstyr]);
+    if(kv.length) inn.push({t:"kv",r:kv});
+    const steg=(it.steg||[]).filter(x=>x && x.trim());
+    if(steg.length){ inn.push({t:"h",x:"Slik gjer du"}); inn.push({t:"ol",l:steg}); }
+    if(it.merknad) inn.push({t:"note",x:it.merknad});
+    return {id:it.id, b:it.merke||"", tittel:it.namn||"(utan namn)", intro:[(MERKE.find(m=>m[0]===(it.merke||""))||["",""])[1].replace("Ikkje sett",""), it.middel].filter(Boolean).join(" · "), innhald:inn};
+  });
+}
+function applyVask(){
+  if(!IK || !VASK) return;
+  const P={id:"vask",namn:"Vask",tittel:"Slik vaskar du",bolkar:vaskToBolkar(VASK)};
+  const i=IK.permar.findIndex(p=>p.id==="vask"); if(i>=0) IK.permar[i]=P; else IK.permar.push(P);
+  ikIndex=null;
+}
+async function loadVask(){
+  if(!TOKEN) return null;
+  try{ const r=await fetch(API+"vask.json?t="+Date.now(),{headers:headers({"Accept":"application/vnd.github.raw"}),cache:"no-store"});
+    if(r.ok){ VASK=(await r.json()).items||[]; if(!IK) await loadIK(); applyVask(); } }catch(e){}
+  return VASK;
+}
+async function saveVask(items, msgText){
+  const content=b64enc(JSON.stringify({items},null,1));
+  for(let a=0;a<4;a++){
+    const g=await fetch(API+"vask.json?t="+Date.now(),{headers:headers(),cache:"no-store"});
+    const sha=g.ok?(await g.json()).sha:null;
+    const body={message:msgText||"Vaskelista endra", content}; if(sha) body.sha=sha;
+    const r=await fetch(API+"vask.json",{method:"PUT",headers:headers({"Content-Type":"application/json"}),body:JSON.stringify(body)});
+    if(r.ok){ VASK=items; applyVask(); return true; }
+    if(r.status!==409 && r.status!==422) return false;
+    await new Promise(res=>setTimeout(res,400+Math.random()*600));
+  }
+  return false;
+}
+function renderVaskForm(root){
+  const it=vaskEdit;
+  const back=document.createElement("button"); back.type="button"; back.className="ik-back"; back.textContent="‹ Avbryt";
+  const close=()=>{ const ny=it.ny; vaskEdit=null; if(ny) vaskSec=null; root.remove(); renderVask(); window.scrollTo({top:0}); };
+  back.onclick=close; root.appendChild(back);
+  const f=document.createElement("form"); f.className="vform"; f.onsubmit=e=>e.preventDefault();
+  const field=(label, el, hint)=>{ const l=document.createElement("label"); l.append(label); if(hint){ const h=document.createElement("span"); h.className="hint"; h.textContent=hint; l.appendChild(h); } l.appendChild(el); f.appendChild(l); return el; };
+  const inp=(v,ph)=>{ const i=document.createElement("input"); i.type="text"; i.value=v||""; i.placeholder=ph||""; return i; };
+  const ta=(v,rows,ph)=>{ const t=document.createElement("textarea"); t.rows=rows; t.value=v||""; t.placeholder=ph||""; return t; };
+  const h=document.createElement("h2"); h.style.cssText="margin:0;font-size:22px;letter-spacing:-.02em"; h.textContent= it.ny ? "Nytt utstyr" : "Rediger: "+it.namn; f.appendChild(h);
+  const fNamn=field("Namn", inp(it.namn,"T.d. Steikeplata (stor)"));
+  const sel=document.createElement("select"); MERKE.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; if((it.merke||"")===v) o.selected=true; sel.appendChild(o); });
+  field("Kor ofte (gruppe i lista)", sel);
+  const fOfte=field("Kor ofte – forklaring", inp(it.ofte,"T.d. Kvar dag ved stengetid"));
+  const fMiddel=field("Middel og dosering", inp(it.middel,"T.d. Ugn & Grill – 10 pump i ein kopp"));
+  const fUtstyr=field("Utstyr", inp(it.utstyr,"T.d. Kopp, papir og gul svamp"));
+  const fSteg=field("Steg", ta((it.steg||[]).join("\n"),8,"Skru av steikeplata.\nHell på 4 koppar vatn.\n…"), "Eitt steg per linje – dei blir nummererte av seg sjølv.");
+  const fMerk=field("Merknad (valfritt)", ta(it.merknad,2,"T.d. Hugs bak plata."));
+  const msg=document.createElement("p"); msg.className="sub"; msg.style.margin="0"; msg.setAttribute("role","status");
+  const row=document.createElement("div"); row.className="row";
+  const save=document.createElement("button"); save.type="button"; save.className="btn"; save.textContent="Lagre";
+  save.onclick=async()=>{
+    const namn=fNamn.value.trim(); if(!namn){ msg.textContent="Skriv namnet på utstyret."; fNamn.focus(); return; }
+    const upd={id:it.id, namn, merke:sel.value, ofte:fOfte.value.trim(), middel:fMiddel.value.trim(), utstyr:fUtstyr.value.trim(),
+      steg:fSteg.value.split("\n").map(x=>x.replace(/^\s*\d+[.)]\s*/,"").trim()).filter(Boolean), merknad:fMerk.value.trim()};
+    const items=(VASK||[]).slice(); const i=items.findIndex(x=>x.id===it.id); if(i>=0) items[i]=upd; else items.push(upd);
+    save.disabled=true; msg.textContent="Lagrar …";
+    const ok=await saveVask(items, (i>=0?"Vask endra: ":"Vask lagt til: ")+namn);
+    save.disabled=false;
+    if(!ok){ msg.textContent="Fekk ikkje lagra. Prøv igjen."; return; }
+    vaskEdit=null; vaskSec=upd.id; root.remove(); renderVask(); window.scrollTo({top:0}); toast("Lagra ✓");
+  };
+  const cancel=document.createElement("button"); cancel.type="button"; cancel.className="btn ghost"; cancel.textContent="Avbryt"; cancel.onclick=close;
+  row.append(save,cancel);
+  if(!it.ny){ const del=document.createElement("button"); del.type="button"; del.className="del"; del.textContent="Slett";
+    del.onclick=async()=>{ if(!del.classList.contains("arm")){ del.classList.add("arm"); del.textContent="Trykk igjen for å slette"; return; }
+      del.disabled=true; msg.textContent="Slettar …";
+      const ok=await saveVask((VASK||[]).filter(x=>x.id!==it.id), "Vask sletta: "+it.namn);
+      if(!ok){ del.disabled=false; msg.textContent="Fekk ikkje sletta. Prøv igjen."; return; }
+      vaskEdit=null; vaskSec=null; root.remove(); renderVask(); window.scrollTo({top:0}); toast("Sletta"); };
+    row.appendChild(del); }
+  f.append(row,msg); root.appendChild(f);
+  if(it.ny) setTimeout(()=>fNamn.focus(),50);
 }
 
 // ---- Rediger telefonlista (eige lagre-knapp, kryptert) ----
@@ -1057,7 +1158,7 @@ async function loadIK(){
   if(IK || ikLoading) return; ikLoading=true;
   try{ const r=await fetch("ik.json?t="+Math.floor(Date.now()/600000),{cache:"no-cache"}); if(r.ok){ IK=await r.json(); store("krambua-ik",JSON.stringify(IK)); } }catch(e){}
   if(!IK){ try{ IK=JSON.parse(load("krambua-ik")||"null"); }catch(e){} }
-  ikLoading=false; ikIndex=null;
+  ikLoading=false; ikIndex=null; applyVask();
   if(view==="ik"){ const r=$("ikRoot"); if(r) r.remove(); renderIK(); }
 }
 const IK_STOP=new Set(("kva kor korleis kven kvifor kvar når kan eg me vi du de dei ein ei eit det den dette er var vere vera blir bli vert på i til av og å skal må med for om som har ikkje ikke seg sjølv frå fra få lov gjer gjere gjera hva hvor hvordan hvem hvilken hvilke jeg en et at så da då ho han hen oss meg deg sin si sitt sine kunden kunde viss dersom eller men noko noe nokon noen litt mykje mye ja nei ok bør burde treng trenger lyst gong gang gonger ganger").split(" "));
