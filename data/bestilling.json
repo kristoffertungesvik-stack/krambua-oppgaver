@@ -20,7 +20,11 @@
    "id": "omv9p7nmiooiy",
    "tekst": "Mindre billigare presenningar (feks 2x3m)",
    "namn": "Vetle Gunleiksrud",
-   "tid": 1792078405722
+   "tid": 1792078405722,
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793356566221
+   }
   },
   {
    "id": "omv9p40nos9el",
