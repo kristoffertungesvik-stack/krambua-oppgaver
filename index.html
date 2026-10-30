@@ -203,6 +203,7 @@ body:has(#vWeek[aria-pressed="true"]) .day-head{display:flex}
 .ik-row .lt.sal{background:#5856d6}
 .ik-row .lt.kasse{background:#248a3d}
 .ik-row .lt.maling{background:#c2410c}
+.ik-row .lt.vask{background:rgba(0,122,255,.12);color:var(--accent);font-size:11px;width:40px;border-radius:10px;letter-spacing:-.01em}
 .ik-row .lt.tel{background:rgba(52,199,89,.15);color:#248a3d;font-size:13px;border-radius:50%}
 .ik-row .num{flex:none;font-size:15px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
 a.ik-row{text-decoration:none;box-sizing:border-box}
@@ -412,6 +413,7 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
       <button type="button" id="vToday" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16.2 9.3"/></svg><span>I dag</span></button>
       <button type="button" id="vWeek" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Oversikt</span></button>
       <button type="button" id="vOrder" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.2l2.2 10.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.2L20.5 8H6.1"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span>Bestill</span><b class="badge" id="oBadge" hidden></b></button>
+      <button type="button" id="vVask" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5c3 3.6 5.5 6.9 5.5 10a5.5 5.5 0 0 1-11 0c0-3.1 2.5-6.4 5.5-10z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg><span>Vask</span></button>
       <button type="button" id="vIK" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l7 2.6v5.5c0 4.4-2.9 8.1-7 9.5-4.1-1.4-7-5.1-7-9.5V5.8l7-2.6z"/><path d="M9 12l2.2 2.2L15.2 10"/></svg><span>Internkontroll</span></button>
       <button type="button" id="vEdit" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg><span>Rediger</span></button>
     </div>
@@ -589,6 +591,7 @@ $("vToday").onclick=()=>setView("today");
 $("vWeek").onclick=()=>setView("week");
 $("vOrder").onclick=()=>setView("bestill");
 $("vIK").onclick=()=>{ ikSec=null; setView("ik"); };
+$("vVask").onclick=()=>{ vaskSec=null; vaskQuery=""; setView("vask"); };
 $("vEdit").onclick=()=>{ editorBuilt=false; draft=null; setView("edit"); };
 $("wkPrev").onclick=()=>{weekOffset--; setView("week");};
 $("wkNext").onclick=()=>{weekOffset++; setView("week");};
@@ -625,7 +628,7 @@ function taskButton(task, date, isToday, tag){
 
 function updateTabs(){
   const seg=document.querySelector(".seg"); if(!seg) return;
-  const ids={today:"vToday",week:"vWeek",bestill:"vOrder",ik:"vIK",edit:"vEdit"};
+  const ids={today:"vToday",week:"vWeek",bestill:"vOrder",vask:"vVask",ik:"vIK",edit:"vEdit"};
   const btns=[...seg.querySelectorAll("button")].filter(b=>!b.hidden);
   btns.forEach(b=>b.setAttribute("aria-pressed", String(b.id===ids[view])));
   seg.style.setProperty("--n", btns.length);
@@ -636,6 +639,7 @@ function render(){
   if(view==="edit"){ if(!editorBuilt) renderEditor(); return; }
   if(view==="bestill"){ editorBuilt=false; renderOrders(); return; }
   if(view==="ik"){ editorBuilt=false; renderIK(); return; }
+  if(view==="vask"){ editorBuilt=false; renderVask(); return; }
   editorBuilt=false;
   const t = today();
   const isWeekday = true;
@@ -902,6 +906,58 @@ function openInstallSheet(){
 function closeInstallSheet(){ $("installSheet").classList.remove("on"); $("scrim").classList.remove("on"); setTimeout(()=>{ $("installSheet").hidden=true; $("scrim").hidden=true; },400); }
 $("installDone").onclick=closeInstallSheet;
 
+
+// ---- Vask-fana: rutinar for reinhald (ligg i ik.json, perm "vask") ----
+let vaskSec=null, vaskHead=null, vaskQuery="";
+function vaskPerm(){ return IK && IK.permar.find(p=>p.id==="vask"); }
+function renderVask(){
+  $("dateline").textContent = "Slik vaskar du"; $("bigTitle").textContent = "Vask";
+  $("ring").hidden = true; $("progBox").hidden = true; $("note").hidden = true; $("shareBox").hidden = true;
+  if($("vaskRoot")) return;
+  const list=$("list"); list.innerHTML="";
+  const root=document.createElement("div"); root.id="vaskRoot"; root.style.cssText="display:flex;flex-direction:column;gap:22px"; list.appendChild(root);
+  if(!IK){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Hentar vaskerutinane …"; root.appendChild(e);
+    const t=setInterval(()=>{ if(IK){ clearInterval(t); if(view==="vask"){ root.remove(); renderVask(); } } },300); loadIK(); return; }
+  if(vaskSec){
+    const keep=ikSec, keepH=ikHead; ikSec=vaskSec; ikHead=vaskHead; renderIKSection(root); ikSec=keep; ikHead=keepH;
+    const bk=root.querySelector(".ik-back"); if(bk){ bk.textContent="‹ Vask"; bk.onclick=()=>{ vaskSec=null; vaskHead=null; root.remove(); renderVask(); window.scrollTo({top:0}); }; }
+    root.querySelectorAll(".perm").forEach(x=>x.textContent="Vask");
+    return;
+  }
+  const sw=document.createElement("form"); sw.className="ik-search"; sw.setAttribute("role","search"); sw.onsubmit=e=>{ e.preventDefault(); const i=$("vQ"); i && i.blur(); };
+  sw.innerHTML='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="vQ" type="search" enterkeyhint="search" autocomplete="off" placeholder="Søk, t.d. «vifte» eller «såpe»" aria-label="Søk i vaskerutinane"><button type="button" class="clr" id="vClr" aria-label="Tøm søket" hidden>✕</button>';
+  root.appendChild(sw);
+  const out=document.createElement("div"); out.id="vaskOut"; out.style.cssText="display:flex;flex-direction:column;gap:22px"; root.appendChild(out);
+  const qi=$("vQ"); qi.value=vaskQuery;
+  qi.oninput=()=>{ vaskQuery=qi.value; $("vClr").hidden=!vaskQuery; vaskResults(); };
+  $("vClr").onclick=()=>{ vaskQuery=""; qi.value=""; $("vClr").hidden=true; vaskResults(); qi.focus(); };
+  $("vClr").hidden=!vaskQuery;
+  vaskResults();
+}
+function vaskRow(sec, sub){
+  const b=ikRowEl(sec.b, "vask", sec.tittel, "", ()=>{ vaskSec=sec.id; vaskHead=null; const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); }, sub || esc(sec.intro||""));
+  return b;
+}
+function vaskResults(){
+  const out=$("vaskOut"); if(!out) return; out.innerHTML="";
+  const P=vaskPerm(); if(!P){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ingen vaskerutinar."; out.appendChild(e); return; }
+  const q=vaskQuery.trim();
+  if(!q){
+    const groups=[["Kvar dag",x=>x.b==="Dag"],["Kvar veke",x=>["Mån","Tor","Veke"].includes(x.b)],["Sjeldnare og ved behov",x=>!["Dag","Mån","Tor","Veke"].includes(x.b)]];
+    groups.forEach(([t,fn])=>{ const items=P.bolkar.filter(fn); if(!items.length) return; const [g,l]=ikGroup(t); items.forEach(sec=>l.appendChild(vaskRow(sec))); out.appendChild(g); });
+    const n=document.createElement("p"); n.className="status"; n.textContent="Trykk på eit utstyr for å sjå korleis det skal vaskast."; out.appendChild(n);
+    return;
+  }
+  const {qt,res}=ikSearch(q);
+  const mine=res.filter(r=> r.d.kind==="faq" ? String(r.d.f.ref).startsWith("vask-") : r.d.perm.id==="vask");
+  const top=mine.find(r=>r.d.kind==="faq" && r.sc>=3);
+  if(top) out.appendChild(ikAnswerCard(top.d.f, qt, "Svar"));
+  const seen=new Set(); const rows=[];
+  mine.forEach(r=>{ if(r.d.kind==="sec" && !seen.has(r.d.sec.id)){ seen.add(r.d.sec.id); rows.push(r); } });
+  if(rows.length){ const [g,l]=ikGroup(top ? "Rutinar" : "Treff"); rows.slice(0,8).forEach(r=>l.appendChild(vaskRow(r.d.sec, ikMark(ikSnippet(r.d.body,qt),qt)))); out.appendChild(g); }
+  if(!top && !rows.length){ const e=document.createElement("p"); e.className="ik-empty"; e.textContent="Fann ikkje noko om det. Prøv eit anna ord, eller spør Kristoffer."; out.appendChild(e); }
+}
+
 // ---- Rediger telefonlista (eige lagre-knapp, kryptert) ----
 let ctDraft=null;
 function contactEditor(){
@@ -1059,7 +1115,11 @@ const IK_SYN=[
  "blande blanding blandar blandinga blander",
  "spann spannet bøtte",
  "base basen",
- "farge fargar farger fargekode fargekoden"
+ "farge fargar farger fargekode fargekoden",
+ "såpe vaskemiddel middel dosering",
+ "vifte vifta viftene",
+ "svamp svampen",
+ "desinfeksjon desinfekt desinfisere desinfisering"
 ].map(g=>g.split(" "));
 const IK_ALG=["gluten","skaldyr","egg","fisk","peanøtter","soya","mjølk","nøtter","selleri","sennep","sesam","sulfitt","lupin","blautdyr"];
 function ikStem(w){
@@ -1136,7 +1196,7 @@ function ikSnippet(body, qt){
 const CHEV='<svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 function findSec(id){ for(const p of IK.permar) for(const s of p.bolkar) if(s.id===id) return {p,s}; return null; }
 function secLabel(id){ const f=findSec(id); return f ? `${f.p.namn} · ${f.s.b} ${f.s.tittel}` : ""; }
-function openSec(id, head){ ikSec=id; ikHead=head||null; const r=$("ikRoot"); if(r) r.remove(); renderIK(); window.scrollTo({top:0}); }
+function openSec(id, head){ if(String(id).startsWith("vask-")){ vaskSec=id; vaskHead=head||null; setView("vask"); const r=$("vaskRoot"); if(r) r.remove(); renderVask(); window.scrollTo({top:0}); return; } ikSec=id; ikHead=head||null; const r=$("ikRoot"); if(r) r.remove(); renderIK(); window.scrollTo({top:0}); }
 function renderIK(){
   $("dateline").textContent = "Permane, rett i appen"; $("bigTitle").textContent = "Internkontroll";
   $("ring").hidden = true; $("progBox").hidden = true; $("note").hidden = true; $("shareBox").hidden = true;
@@ -1199,7 +1259,7 @@ function ikResults(forced){
     more.onclick=()=>{ more.remove(); IK.faq.filter(f=>!pick.includes(f.q)).forEach(f=>l1.appendChild(ikRowEl("?","q",f.q,"",()=>faqOpen(f)))); };
     l1.appendChild(more); out.appendChild(g1);
     if(CONTACTS && CONTACTS.length) out.appendChild(contactsGroup(CONTACTS, null, "Telefonliste"));
-    IK.permar.forEach(p=>{ const [g,l]=ikGroup(p.namn+" – "+p.tittel.toLowerCase());
+    IK.permar.filter(p=>p.id!=="vask").forEach(p=>{ const [g,l]=ikGroup(p.namn+" – "+p.tittel.toLowerCase());
       p.bolkar.forEach(s=>l.appendChild(ikRowEl(s.b, p.id==="mat"?"":p.id, s.tittel, s.intro, ()=>openSec(s.id)))); out.appendChild(g); });
     const n=document.createElement("p"); n.className="status"; n.textContent="Henta frå IK-mat-permen og internkontrollpermen for sal. Ved tvil: spør Kristoffer."; out.appendChild(n);
     return;
