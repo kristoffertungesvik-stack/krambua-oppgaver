@@ -108,7 +108,8 @@
     "id": "tmupnm9rp",
     "t": "Vaskerom",
     "s": "Vaskerommet skal vera låst om natta",
-    "vakt": "kveld"
+    "vakt": "kveld",
+    "reinhald": false
    },
    {
     "id": "tkmv6mi6sy11",
