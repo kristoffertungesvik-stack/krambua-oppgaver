@@ -271,6 +271,41 @@ a.ik-row{text-decoration:none;box-sizing:border-box}
 .isteps .inote{display:block;font-size:14px;color:var(--ink2);margin-top:2px}
 .ct-staff{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink2)}
 .ed-row .ct-staff input{width:18px;height:18px;margin:0;padding:0;flex:none;accent-color:var(--accent)}
+/* ---------- reinhaldslogg ---------- */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.rchip{background:var(--fill);color:var(--ink2)}
+.rchip.on{background:rgba(52,199,89,.16);color:#1f7a37}
+.repcard{display:flex;flex-direction:column;gap:10px;background:var(--cell);border-radius:18px;padding:16px;box-shadow:inset 0 0 0 1.5px rgba(52,199,89,.35)}
+.repcard b{font-size:17px}
+.repcard p{margin:0;font-size:15px;color:var(--ink2);line-height:1.4}
+.repcard .dates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.repcard label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--ink2)}
+.repcard input[type=date]{font:inherit;font-size:16px;padding:10px;border:none;border-radius:12px;background:var(--fill);color:var(--ink);min-width:0;width:100%;box-sizing:border-box}
+.repcard .chk{flex-direction:row;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink)}
+.repcard .chk input{width:20px;height:20px;accent-color:var(--accent)}
+#report{position:fixed;inset:0;z-index:120;background:#fff;color:#111;overflow:auto;-webkit-overflow-scrolling:touch;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+#report .rbar{position:sticky;top:0;z-index:2;display:flex;gap:8px;flex-wrap:wrap;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #e5e5ea}
+#report .rbar button{font:inherit;font-size:15px;font-weight:600;border:none;border-radius:999px;padding:9px 14px;background:#f2f2f7;color:#007aff;cursor:pointer}
+#report .rbar button.pri{background:#007aff;color:#fff}
+#report .rdoc{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+#report h1{font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
+#report .rmeta{margin:0 0 16px;color:#555;font-size:14px;line-height:1.5}
+#report h2{font-size:17px;margin:22px 0 6px;padding-bottom:4px;border-bottom:2px solid #111}
+#report table{width:100%;border-collapse:collapse;font-size:13.5px}
+#report th,#report td{text-align:left;vertical-align:top;padding:6px 6px;border-bottom:1px solid #ddd}
+#report th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:#555}
+#report td.n{text-align:right;font-variant-numeric:tabular-nums}
+#report .thumbs img{width:56px;height:56px;object-fit:cover;border-radius:6px;margin:2px 4px 0 0}
+#report .rnone{color:#555;font-style:italic}
+#report .rfoot{margin-top:28px;font-size:12px;color:#666}
+@media print{
+  body>*:not(#report){display:none!important}
+  #report{position:static;overflow:visible}
+  #report .rbar{display:none}
+  #report .rdoc{padding:0;max-width:none}
+  #report h2{break-after:avoid}
+  #report tr{break-inside:avoid}
+}
 /* ---------- bestilling ---------- */
 .oform{display:grid;grid-template-columns:1fr auto;gap:8px;background:var(--cell);border-radius:16px;padding:12px}
 .scanbtn{display:flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:600;border:none;border-radius:12px;padding:0 14px;background:rgba(0,122,255,.10);color:var(--accent);cursor:pointer}
@@ -669,6 +704,7 @@ function render(){
   else note.hidden=true;
 
   const list=$("list"); list.innerHTML="";
+  if(view==="week" && isOwner && TOKEN) list.appendChild(reportCard());
   for(const d of week){
     const isToday = d.date === t.date;
     const sec=document.createElement("section"); sec.className="day"+(isToday?" is-today":""); sec.id="dag-"+d.dow;
@@ -1057,6 +1093,93 @@ function renderVaskForm(root){
     row.appendChild(del); }
   f.append(row,msg); root.appendChild(f);
   if(it.ny) setTimeout(()=>fNamn.focus(),50);
+}
+
+
+// ---- Reinhaldslogg til Mattilsynet (berre for sjefen, frå Oversikt) ----
+const CLEAN_RX=/(vask|reingj|rengj|desinfis|skrubb|tørk av|stålglans|\brein)/i;
+function isCleaning(task){ if(typeof task.reinhald==="boolean") return task.reinhald; return CLEAN_RX.test((task.t||"")+" "+(task.s||"")); }
+function allTasks(){ const out=[]; (DAILY.tasks||[]).forEach(t=>out.push(t)); for(let d=1; d<=7; d++) ((WEEK[d]||{}).tasks||[]).forEach(t=>out.push(t)); return out; }
+function findTask(id){ return allTasks().find(t=>t.id===id) || null; }
+function reportCard(){
+  const c=document.createElement("div"); c.className="repcard";
+  const t=today(); const from=addDays(t.date,-30);
+  c.innerHTML='<b>🧽 Reinhaldslogg til Mattilsynet</b><p>Hent ut alt som er kryssa av som reinhald i ein periode – med dato, kven som gjorde det, klokkeslett, kommentarar og bilete. Kan skrivast ut, lagrast som PDF eller lastast ned til Excel.</p>';
+  const dates=document.createElement("div"); dates.className="dates";
+  const mk=(lbl,val)=>{ const l=document.createElement("label"); l.append(lbl); const i=document.createElement("input"); i.type="date"; i.value=val; i.max=t.date; l.appendChild(i); dates.appendChild(l); return i; };
+  const fi=mk("Frå", from), ti=mk("Til", t.date);
+  const ck=document.createElement("label"); ck.className="chk"; const cb=document.createElement("input"); cb.type="checkbox"; cb.checked=true; ck.append(cb, " Berre reinhald (vask)");
+  const b=document.createElement("button"); b.type="button"; b.className="btn"; b.textContent="Lag logg";
+  const msg=document.createElement("p"); msg.setAttribute("role","status");
+  b.onclick=async()=>{ if(!fi.value||!ti.value||fi.value>ti.value){ msg.textContent="Vel ein gyldig periode."; return; }
+    b.disabled=true; msg.textContent="Hentar avkryssingar …";
+    try{ const rows=await collectReport(fi.value, ti.value, cb.checked, n=>{ msg.textContent=`Hentar avkryssingar … (${n})`; }); msg.textContent=""; showReport(rows, fi.value, ti.value, cb.checked); }
+    catch(e){ msg.textContent="Fekk ikkje henta loggen. Sjekk nettet og prøv igjen."; }
+    b.disabled=false; };
+  c.append(dates, ck, b, msg); return c;
+}
+async function collectReport(from, to, onlyClean, progress){
+  const r=await fetch(API.replace(/\/$/,"")+"?t="+Date.now(),{headers:headers(),cache:"no-store"});
+  if(!r.ok) throw new Error("liste "+r.status);
+  const files=(await r.json()).map(x=>x.name).filter(n=>/^\d{4}-\d{2}-\d{2}\.json$/.test(n)).map(n=>n.slice(0,10)).filter(d=>d>=from && d<=to).sort();
+  const rows=[]; let done=0; const queue=files.slice();
+  const work=async()=>{ while(queue.length){ const d=queue.shift();
+    let day={};
+    if(data[d] && sha[d]!==undefined) day=data[d];
+    else { const g=await fetch(API+d+".json?t="+Date.now(),{headers:headers({"Accept":"application/vnd.github.raw"}),cache:"no-store"}); if(g.ok){ try{ day=(await g.json()).done||{}; }catch(e){} } }
+    for(const [id,v] of Object.entries(day)){
+      const tk=findTask(id); const title=v.oppg || (tk && tk.t) || null;
+      if(!title) continue;
+      const clean = tk ? isCleaning(tk) : CLEAN_RX.test(title);
+      if(onlyClean && !clean) continue;
+      rows.push({date:d, id, oppg:title, namn:v.namn||"", tid:v.tid||0, kommentar:v.kommentar||"", bilete:v.bilete||[]});
+    }
+    done++; progress && progress(done); } };
+  await Promise.all(Array.from({length:Math.min(6,queue.length||1)},work));
+  rows.sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1 : (a.tid-b.tid));
+  return rows;
+}
+function fmtDateLong(d){ const dt=new Date(d+"T12:00:00Z"); const dow=(dt.getUTCDay()+6)%7; return DAYNAMES[dow]+" "+pretty(d); }
+function fmtClock(ms){ return ms ? new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(ms)) : ""; }
+let reportRows=null, reportMeta=null;
+function showReport(rows, from, to, onlyClean){
+  reportRows=rows; reportMeta={from,to,onlyClean};
+  let ov=$("report"); if(ov) ov.remove();
+  ov=document.createElement("div"); ov.id="report"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-label","Reinhaldslogg");
+  const title = onlyClean ? "Reinhaldslogg" : "Logg over utførte oppgåver";
+  const now=fmtDateLong(today().date)+" kl. "+fmtClock(Date.now());
+  let h='<div class="rbar"><button type="button" class="pri" id="rPrint">Skriv ut / lagre som PDF</button><button type="button" id="rCsv">Last ned (Excel)</button><button type="button" id="rClose">Lukk</button></div><div class="rdoc">';
+  h+='<h1>'+esc(title)+' – Krambua Bensin &amp; Storkiosk AS</h1>';
+  h+='<p class="rmeta">Periode: '+esc(fmtDateLong(from))+' – '+esc(fmtDateLong(to))+'<br>Henta ut frå oppgåveappen '+esc(now)+'. Kvar rad er registrert av den tilsette sjølv då oppgåva vart kryssa av.</p>';
+  if(!rows.length){ h+='<p class="rnone">Ingen '+(onlyClean?"reinhaldsoppgåver":"oppgåver")+' er kryssa av i denne perioden.</p>'; }
+  else{
+    // samandrag per oppgåve
+    const cnt={}; rows.forEach(r=>{ cnt[r.oppg]=(cnt[r.oppg]||0)+1; });
+    const days=new Set(rows.map(r=>r.date)).size;
+    h+='<h2>Samandrag</h2><p class="rmeta">'+rows.length+' utførte oppgåver fordelt på '+days+' dagar.</p><table><thead><tr><th>Oppgåve</th><th style="text-align:right">Tal gonger</th></tr></thead><tbody>';
+    Object.entries(cnt).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"nn")).forEach(([k,n])=>{ h+='<tr><td>'+esc(k)+'</td><td class="n">'+n+'</td></tr>'; });
+    h+='</tbody></table>';
+    // dag for dag
+    let cur=null;
+    rows.forEach(r=>{
+      if(r.date!==cur){ if(cur) h+='</tbody></table>'; cur=r.date; h+='<h2>'+esc(fmtDateLong(r.date))+'</h2><table><thead><tr><th>Oppgåve</th><th>Utført av</th><th>Kl.</th><th>Kommentar / bilete</th></tr></thead><tbody>'; }
+      h+='<tr><td>'+esc(r.oppg)+'</td><td>'+esc(r.namn)+'</td><td>'+esc(fmtClock(r.tid))+'</td><td>'+(r.kommentar?esc(r.kommentar):'')+(r.bilete.length?'<div class="thumbs">'+r.bilete.map(p=>'<img src="'+esc(imgUrl(p))+'" alt="Bilete">').join("")+'</div>':'')+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  }
+  h+='<p class="rfoot">Krambua Bensin &amp; Storkiosk AS · Reinhaldsplan: sjå IK-mat-permen del C.</p></div>';
+  ov.innerHTML=h; document.body.appendChild(ov); ov.scrollTop=0;
+  $("rClose").onclick=()=>ov.remove();
+  $("rPrint").onclick=()=>window.print();
+  $("rCsv").onclick=downloadReportCsv;
+}
+function downloadReportCsv(){
+  const rows=reportRows||[]; const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const lines=[["Dato","Vekedag","Oppgåve","Utført av","Klokkeslett","Kommentar","Tal bilete"].map(q).join(";")];
+  rows.forEach(r=>{ const dt=new Date(r.date+"T12:00:00Z"); lines.push([r.date, DAYNAMES[(dt.getUTCDay()+6)%7], r.oppg, r.namn, fmtClock(r.tid), r.kommentar, r.bilete.length].map(q).join(";")); });
+  const blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`reinhaldslogg_${reportMeta.from}_${reportMeta.to}.csv`;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000);
 }
 
 // ---- Rediger telefonlista (eige lagre-knapp, kryptert) ----
@@ -1606,7 +1729,8 @@ function markDone(date,id,extra){
     $("nameHint").textContent="Skriv namnet ditt først, så veit me kven som gjorde det.";
     openSheet(); return;
   }
-  return setTask(date,id,Object.assign({namn, tid:Date.now()}, extra||{}));
+  const tk=findTask(id);
+  return setTask(date,id,Object.assign({namn, tid:Date.now()}, tk ? {oppg:tk.t} : {}, extra||{}));
 }
 async function setTask(date,id,val){
   if(busy) return; busy=true;
@@ -1671,7 +1795,10 @@ function renderEditor(){
       b.oninput=()=>{ task.s=b.value; dirty=true; };
       const vc=document.createElement("button"); vc.type="button"; vc.className="vchip v-"+vaktOf(task); vc.textContent=vaktLabel(vaktOf(task)); vc.title="Trykk for å byte mellom Alltid, Dagvakt og Kveldsvakt";
       vc.onclick=()=>{ const nx={alltid:"dag",dag:"kveld",kveld:"alltid"}[vaktOf(task)]; if(nx==="alltid") delete task.vakt; else task.vakt=nx; dirty=true; vc.className="vchip v-"+vaktOf(task); vc.textContent=vaktLabel(vaktOf(task)); };
-      f.append(a,b,vc);
+      const rc=document.createElement("button"); rc.type="button"; rc.className="vchip rchip"+(isCleaning(task)?" on":""); rc.textContent=isCleaning(task)?"🧽 Reinhald":"Ikkje reinhald"; rc.title="Kjem med i reinhaldsloggen til Mattilsynet";
+      rc.onclick=()=>{ task.reinhald=!isCleaning(task); dirty=true; rc.className="vchip rchip"+(isCleaning(task)?" on":""); rc.textContent=isCleaning(task)?"🧽 Reinhald":"Ikkje reinhald"; };
+      const chips=document.createElement("div"); chips.className="chips"; chips.append(vc,rc);
+      f.append(a,b,chips);
       const acts=document.createElement("div"); acts.className="acts";
       const mk=(txt,lbl,fn)=>{ const x=document.createElement("button"); x.type="button"; x.textContent=txt; x.setAttribute("aria-label",lbl); x.onclick=()=>{ fn(); dirty=true; renderEditor(); }; return x; };
       if(task.viktig) row.classList.add("viktig");
@@ -1700,7 +1827,7 @@ function renderEditor(){
   bar.append(save,cancel,keyBtn,msg); list.appendChild(bar);
 }
 async function saveTasks(btn,msg){
-  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {}), ...(x.vakt==="dag"||x.vakt==="kveld" ? {vakt:x.vakt} : {})})).filter(x=>x.t);
+  const clean = arr => arr.map(x=>({id:x.id, t:(x.t||"").trim(), ...(x.s && x.s.trim() ? {s:x.s.trim()} : {}), ...(x.viktig ? {viktig:true} : {}), ...(x.vakt==="dag"||x.vakt==="kveld" ? {vakt:x.vakt} : {}), ...(typeof x.reinhald==="boolean" ? {reinhald:x.reinhald} : {})})).filter(x=>x.t);
   const newDaily = Object.assign({}, DAILY, {tasks: clean(draft[0])});
   const newWeek = clone(WEEK);
   for(let d=1; d<=7; d++){ newWeek[d] = Object.assign({title:DAYNAMES[d-1]}, newWeek[d]||{}, {tasks: clean(draft[d])}); }
