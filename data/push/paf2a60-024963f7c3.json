@@ -1,0 +1,12 @@
+{
+ "id": "paf2a60",
+ "sub": {
+  "endpoint": "https://fcm.googleapis.com/fcm/send/c5BvD2joBcI:APA91bFLi9xOcZGih0B4TBqPe6lsnQskn5aHjoIGs4NX11s7QiS90f3A6VakevuecZU2_QOcK_lvPRwJR7nogpsIXqWheYS9xylY0TkRcJ9oV10UPenigTN_y-moju0SrPI4AADkVuG7",
+  "expirationTime": null,
+  "keys": {
+   "p256dh": "BATaoqwWPDRFeXzZYwb0j5takoZiiuC2p5aPOnWpflZ6IFJSDWoutIjm5PCOk3Cf9aSxjoMn-0xbg_ioK0iSuXA",
+   "auth": "2YdV2aeBU4AKTyXVp-kxKQ"
+  }
+ },
+ "laga": "2026-11-04T12:24:33.390Z"
+}
