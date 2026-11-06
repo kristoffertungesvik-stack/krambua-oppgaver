@@ -84,7 +84,11 @@
    "tekst": "Dieselpartikkelfilterrens Motip 4",
    "namn": "Dagmar Born",
    "tid": 1793959287057,
-   "ean": "8711347228836"
+   "ean": "8711347228836",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793960616625
+   }
   },
   {
    "id": "omw4secg8szxd",
