@@ -30,7 +30,11 @@
    "tekst": "Dust Remover Flmmable",
    "namn": "Dagmar Born",
    "tid": 1793959485299,
-   "ean": "8711347253142"
+   "ean": "8711347253142",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793960626065
+   }
   },
   {
    "id": "omw4t4fghs6nt",
