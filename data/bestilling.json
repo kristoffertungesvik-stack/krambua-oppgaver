@@ -5,7 +5,11 @@
    "tekst": "Brake Cleaner",
    "namn": "Dagmar Born",
    "tid": 1793959496701,
-   "ean": "8711347005635"
+   "ean": "8711347005635",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793959624935
+   }
   },
   {
    "id": "omw4t5pwzx3j0",
