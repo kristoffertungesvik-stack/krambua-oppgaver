@@ -118,7 +118,11 @@
    "tekst": "Motip Varmebestandig lakk 800*",
    "namn": "Vetle Gunleiksrud",
    "tid": 1792077917737,
-   "ean": "8711347040315"
+   "ean": "8711347040315",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793959614623
+   }
   },
   {
    "id": "omv9ocy0zun4v",
