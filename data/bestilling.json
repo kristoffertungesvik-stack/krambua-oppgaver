@@ -73,7 +73,11 @@
    "tekst": "Motip Vaselin Spray",
    "namn": "Dagmar Born",
    "tid": 1793959298766,
-   "ean": "8711347226146"
+   "ean": "8711347226146",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793960572841
+   }
   },
   {
    "id": "omw4t1gy9ppfq",
