@@ -44,7 +44,11 @@
    "tekst": "Motip white grease-spray",
    "namn": "Dagmar Born",
    "tid": 1793959374799,
-   "ean": "8711347226283"
+   "ean": "8711347226283",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1793960540658
+   }
   },
   {
    "id": "omw4t28mpsxwe",
