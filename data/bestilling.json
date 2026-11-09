@@ -128,7 +128,11 @@
    "tekst": "Kims French Fries 90 g",
    "namn": "Dagmar Born",
    "tid": 1793957711384,
-   "ean": "7039317004930"
+   "ean": "7039317004930",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794212288446
+   }
   },
   {
    "id": "omvs8xz7i2r02",
