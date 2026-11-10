@@ -44,7 +44,11 @@
    "tekst": "Lyslenke m/ Batterie",
    "namn": "Dagmar Born",
    "tid": 1793962665885,
-   "ean": "310501450410"
+   "ean": "310501450410",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794316758465
+   }
   },
   {
    "id": "omw4tepq58gvg",
