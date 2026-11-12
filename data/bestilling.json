@@ -82,7 +82,11 @@
    "tekst": "Relekta 101 Akryl Fugemasse H",
    "namn": "Dagmar Born",
    "tid": 1793959904958,
-   "ean": "7090002666055"
+   "ean": "7090002666055",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794465200328
+   }
   },
   {
    "id": "omw4ta0zykujc",
