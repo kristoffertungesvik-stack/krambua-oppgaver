@@ -12,7 +12,11 @@
    "tekst": "Gjøco Wipes",
    "namn": "Dagmar Born",
    "tid": 1794405123761,
-   "ean": "7041536910039"
+   "ean": "7041536910039",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794465244958
+   }
   },
   {
    "id": "omwc6fjk43ghw",
