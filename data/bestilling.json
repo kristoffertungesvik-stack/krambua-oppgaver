@@ -50,7 +50,11 @@
    "tekst": "Daim 28g",
    "namn": "Dagmar Born",
    "tid": 1794232528077,
-   "ean": "7310511250706"
+   "ean": "7310511250706",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794465781752
+   }
   },
   {
    "id": "omw9bp5yyaqn5",
