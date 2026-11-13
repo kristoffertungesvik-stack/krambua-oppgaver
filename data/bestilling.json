@@ -5,7 +5,11 @@
    "tekst": "Premium tapetlim",
    "namn": "Dagmar Born",
    "tid": 1794405182557,
-   "ean": "7311980123454"
+   "ean": "7311980123454",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1794572149096
+   }
   },
   {
    "id": "omwc6har5mefh",
@@ -217,26 +221,6 @@
    "bestilt": {
     "namn": "Kristoffer Moe Tungesvik",
     "tid": 1793686586741
-   }
-  },
-  {
-   "id": "omvo5k4fqnket",
-   "tekst": "Epok 23",
-   "namn": "Vetle Gunleiksrud",
-   "tid": 1792952387702,
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793356561601
-   }
-  },
-  {
-   "id": "omv9p7nmiooiy",
-   "tekst": "Mindre billigare presenningar (feks 2x3m)",
-   "namn": "Vetle Gunleiksrud",
-   "tid": 1792078405722,
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793356566221
    }
   },
   {
