@@ -206,6 +206,13 @@
      "id": "manglar",
      "t": "Skriv ned varer som manglar",
      "vakt": "dag"
+    },
+    {
+     "id": "tmwj3urtn",
+     "t": "Vask kaffiemaskinen",
+     "s": "Ein gang i månaden med klortabelett",
+     "vakt": "dag",
+     "reinhald": true
     }
    ]
   },
