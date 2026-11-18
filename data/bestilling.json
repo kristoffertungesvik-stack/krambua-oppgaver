@@ -1,6 +1,13 @@
 {
  "items": [
   {
+   "id": "omwm48o2qz4vl",
+   "tekst": "shell helix ultra 5w-40",
+   "namn": "Dagmar Born",
+   "tid": 1795006023650,
+   "ean": "5011987062924"
+  },
+  {
    "id": "omwc6ik4deekm",
    "tekst": "Premium tapetlim",
    "namn": "Dagmar Born",
@@ -211,16 +218,6 @@
    "bestilt": {
     "namn": "Kristoffer Moe Tungesvik",
     "tid": 1794212288446
-   }
-  },
-  {
-   "id": "omvs8xz7i2r02",
-   "tekst": "Paraply",
-   "namn": "Amalie Moe Tungesvik",
-   "tid": 1793199937662,
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793686586741
    }
   },
   {
