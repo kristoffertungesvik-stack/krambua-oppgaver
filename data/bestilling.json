@@ -12,7 +12,11 @@
    "tekst": "Mønster juice",
    "namn": "Dagmar Born",
    "tid": 1795167534438,
-   "ean": "751119"
+   "ean": "751119",
+   "bestilt": {
+    "namn": "Kristoffer Moe Tungesvik",
+    "tid": 1795170103398
+   }
   },
   {
    "id": "omwnftfmr9cuj",
@@ -154,17 +158,6 @@
    "ean": "7021110112219"
   },
   {
-   "id": "omw4t5yppjmgt",
-   "tekst": "Brake Cleaner",
-   "namn": "Dagmar Born",
-   "tid": 1793959496701,
-   "ean": "8711347005635",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793959624935
-   }
-  },
-  {
    "id": "omw4t5pwzx3j0",
    "tekst": "Dust Remover Flmmable",
    "namn": "Dagmar Born",
@@ -202,17 +195,6 @@
    "bestilt": {
     "namn": "Kristoffer Moe Tungesvik",
     "tid": 1793960641185
-   }
-  },
-  {
-   "id": "omw4t1yxn49l1",
-   "tekst": "Motip Contact cleaner",
-   "namn": "Dagmar Born",
-   "tid": 1793959310363,
-   "ean": "8711347225644",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793959619991
    }
   },
   {
@@ -261,17 +243,6 @@
    "namn": "Vetle Gunleiksrud",
    "tid": 1792078235988,
    "ean": "7041530900753"
-  },
-  {
-   "id": "omv9ox73db69x",
-   "tekst": "Motip Varmebestandig lakk 800*",
-   "namn": "Vetle Gunleiksrud",
-   "tid": 1792077917737,
-   "ean": "8711347040315",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1793959614623
-   }
   },
   {
    "id": "omv9ocy0zun4v",
