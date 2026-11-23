@@ -159,7 +159,11 @@
    "tekst": "Energizer AA 4pack",
    "namn": "Dagmar Born",
    "tid": 1795433004159,
-   "ean": "7638900437300"
+   "ean": "7638900437300",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451824484
+   }
   },
   {
    "id": "omwt511bzykle",
