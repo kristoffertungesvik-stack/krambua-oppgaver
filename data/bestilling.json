@@ -82,7 +82,11 @@
    "tekst": "Skruf Super White 65 S6",
    "namn": "Dagmar Born",
    "tid": 1795445685476,
-   "ean": "7350139643733"
+   "ean": "7350139643733",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451797182
+   }
   },
   {
    "id": "omwtdzn59xx2t",
