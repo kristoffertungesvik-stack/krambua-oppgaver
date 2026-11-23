@@ -104,7 +104,11 @@
    "tekst": "Skruf fresh xtra stark white slim",
    "namn": "Dagmar Born",
    "tid": 1795445587891,
-   "ean": "7330196001042"
+   "ean": "7330196001042",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451804950
+   }
   },
   {
    "id": "omwtdxi4h0nne",
