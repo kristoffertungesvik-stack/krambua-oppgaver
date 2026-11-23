@@ -148,7 +148,11 @@
    "tekst": "Epok no1 orgibal blue 4",
    "namn": "Dagmar Born",
    "tid": 1795445478138,
-   "ean": "5715345038711"
+   "ean": "5715345038711",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451820994
+   }
   },
   {
    "id": "omwt6gccdkjru",
