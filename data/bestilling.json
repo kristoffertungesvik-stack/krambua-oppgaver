@@ -60,7 +60,11 @@
    "tekst": "G3 no8 volt Super Strong",
    "namn": "Dagmar Born",
    "tid": 1795445750795,
-   "ean": "7311250083310"
+   "ean": "7311250083310",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451788592
+   }
   },
   {
    "id": "omwte17154o8v",
