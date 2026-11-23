@@ -191,7 +191,11 @@
    "tekst": "Tec7 hvit",
    "namn": "Dagmar Born",
    "tid": 1795177605884,
-   "ean": "5414195532768"
+   "ean": "5414195532768",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795452810949
+   }
   },
   {
    "id": "omwoydzp46m3h",
