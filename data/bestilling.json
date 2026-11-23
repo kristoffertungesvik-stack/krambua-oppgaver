@@ -1,6 +1,13 @@
 {
  "items": [
   {
+   "id": "omwt50accf26s",
+   "tekst": "Juletre voks m/led",
+   "namn": "Dagmar Born",
+   "tid": 1795430575453,
+   "ean": "5709386712358"
+  },
+  {
    "id": "omwp8ari6y6pa",
    "tekst": "Musefelle 2pk",
    "namn": "Amalie Moe Tungesvik",
@@ -139,17 +146,6 @@
    }
   },
   {
-   "id": "omw52qwqlw2it",
-   "tekst": "Skruf fresh xtra stark white slim",
-   "namn": "Dagmar Born",
-   "tid": 1793975590461,
-   "ean": "7330196001042",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794212272342
-   }
-  },
-  {
    "id": "omw4v1w2kl4x7",
    "tekst": "Lyslenke m/ Batterie",
    "namn": "Dagmar Born",
@@ -191,17 +187,6 @@
    "namn": "Dagmar Born",
    "tid": 1793958208137,
    "ean": "7311041083703"
-  },
-  {
-   "id": "omw4s3p5kd95r",
-   "tekst": "Kims French Fries 90 g",
-   "namn": "Dagmar Born",
-   "tid": 1793957711384,
-   "ean": "7039317004930",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794212288446
-   }
   },
   {
    "id": "omv9p40nos9el",
