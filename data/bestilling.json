@@ -16,7 +16,11 @@
    "tekst": "Prince White",
    "namn": "Dagmar Born",
    "tid": 1795446011008,
-   "ean": "70114737"
+   "ean": "70114737",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451624154
+   }
   },
   {
    "id": "omwte5mszpyaw",
