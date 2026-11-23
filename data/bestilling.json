@@ -362,7 +362,11 @@
    "tekst": "Plastbøtte 10L",
    "namn": "Dagmar Born",
    "tid": 1793958208137,
-   "ean": "7311041083703"
+   "ean": "7311041083703",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451841158
+   }
   },
   {
    "id": "omv9p40nos9el",
