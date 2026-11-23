@@ -34,7 +34,11 @@
    "tekst": "Tiedemanns rød 3",
    "namn": "Dagmar Born",
    "tid": 1795445810737,
-   "ean": "5710840347313"
+   "ean": "5710840347313",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451616985
+   }
   },
   {
    "id": "omwte1szhvpw5",
