@@ -241,7 +241,11 @@
    "tekst": "Snkers 2 pk",
    "namn": "Dagmar Born",
    "tid": 1795085845868,
-   "ean": "5900951310973"
+   "ean": "5900951310973",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795452606910
+   }
   },
   {
    "id": "omwm48o2qz4vl",
