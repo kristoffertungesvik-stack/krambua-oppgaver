@@ -279,7 +279,11 @@
    "id": "omwc54x42cycg",
    "tekst": "Hatting pølsebrø",
    "namn": "Dagmar Born",
-   "tid": 1794402866595
+   "tid": 1794402866595,
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451836361
+   }
   },
   {
    "id": "omwapm4gzeq7p",
