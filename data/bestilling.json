@@ -19,7 +19,11 @@
    "tekst": "Rizla double",
    "namn": "Dagmar Born",
    "tid": 1795445941427,
-   "ean": "5410133834338"
+   "ean": "5410133834338",
+   "bestilt": {
+    "namn": "Amalie Moe Tungesvik",
+    "tid": 1795449958207
+   }
   },
   {
    "id": "omwte2typ8n0a",
