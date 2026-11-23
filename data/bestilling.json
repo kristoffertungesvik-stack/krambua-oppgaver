@@ -71,7 +71,11 @@
    "tekst": "G3 No1 ExStrong",
    "namn": "Dagmar Born",
    "tid": 1795445734361,
-   "ean": "7311250083068"
+   "ean": "7311250083068",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451792157
+   }
   },
   {
    "id": "omwte05b8c3ih",
