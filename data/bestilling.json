@@ -93,7 +93,11 @@
    "tekst": "Skruf løs S3",
    "namn": "Dagmar Born",
    "tid": 1795445661933,
-   "ean": "7330196000601"
+   "ean": "7330196000601",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451801778
+   }
   },
   {
    "id": "omwtdy20jehrc",
