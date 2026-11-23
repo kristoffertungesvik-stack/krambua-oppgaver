@@ -115,7 +115,11 @@
    "tekst": "Epok no 21 orginal navy 7",
    "namn": "Dagmar Born",
    "tid": 1795445562113,
-   "ean": "5715345038759"
+   "ean": "5715345038759",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451807100
+   }
   },
   {
    "id": "omwtdwirvltew",
