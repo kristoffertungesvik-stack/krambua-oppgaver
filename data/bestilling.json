@@ -49,7 +49,11 @@
    "tekst": "General Classic No4 Portion",
    "namn": "Dagmar Born",
    "tid": 1795445762813,
-   "ean": "7311250082795"
+   "ean": "7311250082795",
+   "bestilt": {
+    "namn": "Anita Moe Tungesvik",
+    "tid": 1795451785582
+   }
   },
   {
    "id": "omwte1jpmilj6",
