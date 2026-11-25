@@ -1,6 +1,13 @@
 {
  "items": [
   {
+   "id": "omwvzb48qgh0c",
+   "tekst": "Dressingbecher",
+   "namn": "Dagmar Born",
+   "tid": 1795602401596,
+   "ean": "4002911857083"
+  },
+  {
    "id": "omwte7fhzszy7",
    "tekst": "Prince Red",
    "namn": "Dagmar Born",
@@ -331,17 +338,6 @@
    "bestilt": {
     "namn": "Kristoffer Moe Tungesvik",
     "tid": 1794465779569
-   }
-  },
-  {
-   "id": "omw4v1w2kl4x7",
-   "tekst": "Lyslenke m/ Batterie",
-   "namn": "Dagmar Born",
-   "tid": 1793962665885,
-   "ean": "310501450410",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794316758465
    }
   },
   {
