@@ -1,6 +1,13 @@
 {
  "items": [
   {
+   "id": "omwxiuz2ov4v8",
+   "tekst": "Daim 28g",
+   "namn": "Dagmar Born",
+   "tid": 1795695706896,
+   "ean": "7310511250706"
+  },
+  {
    "id": "omwvzb48qgh0c",
    "tekst": "Dressingbecher",
    "namn": "Dagmar Born",
@@ -277,17 +284,6 @@
    }
   },
   {
-   "id": "omwc6har5mefh",
-   "tekst": "Gjøco Wipes",
-   "namn": "Dagmar Born",
-   "tid": 1794405123761,
-   "ean": "7041536910039",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794465244958
-   }
-  },
-  {
    "id": "omwc6fjk43ghw",
    "tekst": "Helix Ultra 5w-30 1L",
    "namn": "Dagmar Born",
@@ -317,39 +313,6 @@
    "namn": "Dagmar Born",
    "tid": 1794233144684,
    "ean": "5701984116859"
-  },
-  {
-   "id": "omw9bpz2lt89o",
-   "tekst": "Daim 28g",
-   "namn": "Dagmar Born",
-   "tid": 1794232528077,
-   "ean": "7310511250706",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794465781752
-   }
-  },
-  {
-   "id": "omw9bp5yyaqn5",
-   "tekst": "Snickers",
-   "namn": "Dagmar Born",
-   "tid": 1794232490362,
-   "ean": "5900951310980",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794465779569
-   }
-  },
-  {
-   "id": "omw4tepq58gvg",
-   "tekst": "Relekta 101 Akryl Fugemasse H",
-   "namn": "Dagmar Born",
-   "tid": 1793959904958,
-   "ean": "7090002666055",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794465200328
-   }
   },
   {
    "id": "omw4ta0zykujc",
