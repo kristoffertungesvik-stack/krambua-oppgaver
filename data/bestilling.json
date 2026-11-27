@@ -1,6 +1,13 @@
 {
  "items": [
   {
+   "id": "omwyya9epvzel",
+   "tekst": "Mobil Sagkjedolje 4l",
+   "namn": "Dagmar Born",
+   "tid": 1795782080546,
+   "ean": "5055107432082"
+  },
+  {
    "id": "omwyuxuyi624l",
    "tekst": "Mills majones porsjon poser",
    "namn": "Dagmar Born",
@@ -331,17 +338,6 @@
    "namn": "Dagmar Born",
    "tid": 1795006023650,
    "ean": "5011987062924"
-  },
-  {
-   "id": "omwc6ik4deekm",
-   "tekst": "Premium tapetlim",
-   "namn": "Dagmar Born",
-   "tid": 1794405182557,
-   "ean": "7311980123454",
-   "bestilt": {
-    "namn": "Kristoffer Moe Tungesvik",
-    "tid": 1794572149096
-   }
   },
   {
    "id": "omwc6fjk43ghw",
